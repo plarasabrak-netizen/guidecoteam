@@ -1,0 +1,1700 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>GuideDuCoteam</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0f;--bg2:#11111a;--bg3:#181824;--bg4:#1e1e2e;
+  --border:#252535;--border2:#353550;--border3:#454565;
+  --gold:#e8a630;--gold2:#f5c060;--gold3:#ffd980;--gold-dim:#5a3d10;--gold-bg:#15100a;
+  --text:#eceaf8;--text2:#9896b0;--text3:#5a5875;
+  --green:#3db868;--green2:#52d47f;--green-bg:#081a10;--green-border:#1a4a28;
+  --red:#c04848;--red-bg:#180808;--red-border:#3a1818;
+  --blue:#4a8fd4;--blue-bg:#08101e;
+  --purple:#9b6fd4;
+  --warn-bg:#1a1200;--warn-border:#4a3800;--warn:#e8c030;
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;font-size:14px;line-height:1.6}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* ===== PROFILE SCREEN ===== */
+#profile-screen{
+  position:fixed;inset:0;background:var(--bg);z-index:1000;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px;
+}
+.profile-logo{text-align:center}
+.profile-logo .logo-icon{
+  width:64px;height:64px;margin:0 auto 16px;
+  background:var(--gold-bg);border:1px solid var(--gold-dim);border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+}
+.profile-logo h1{font-size:28px;font-weight:600;color:var(--text);letter-spacing:-0.5px}
+.profile-logo p{font-size:13px;color:var(--text3);margin-top:4px}
+.profile-cards{display:flex;gap:16px}
+.profile-card{
+  width:180px;padding:24px 20px;border-radius:14px;
+  border:1px solid var(--border2);background:var(--bg3);
+  cursor:pointer;text-align:center;transition:all 0.2s;
+}
+.profile-card:hover{border-color:var(--gold);background:var(--bg4);transform:translateY(-2px)}
+.profile-card .pc-icon{font-size:32px;margin-bottom:12px}
+.profile-card .pc-name{font-size:15px;font-weight:600;color:var(--text)}
+
+/* ===== MAIN APP ===== */
+#app{display:none;height:100vh;flex-direction:column}
+#app.visible{display:flex}
+
+/* HEADER */
+.app-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 16px;background:var(--bg2);border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+.header-left{display:flex;align-items:center;gap:10px}
+.header-logo{
+  width:28px;height:28px;background:var(--gold-bg);border:0.5px solid var(--gold-dim);
+  border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.header-title{font-size:15px;font-weight:600;color:var(--text)}
+.header-sub{font-size:11px;color:var(--text3)}
+.profile-badge{
+  display:flex;align-items:center;gap:6px;padding:5px 12px;
+  border-radius:7px;border:0.5px solid var(--border2);background:var(--bg3);
+  font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;
+  transition:all 0.15s;
+}
+.profile-badge:hover{border-color:var(--gold);color:var(--gold)}
+.profile-badge .pb-dot{width:6px;height:6px;border-radius:50%;background:var(--green)}
+
+/* TABS */
+.app-tabs{
+  display:flex;background:var(--bg2);border-bottom:1px solid var(--border);
+  flex-shrink:0;padding:0 16px;overflow-x:auto;
+}
+.app-tab{
+  padding:10px 16px;font-size:13px;font-weight:500;color:var(--text3);
+  cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;
+  white-space:nowrap;transition:all 0.15s;
+}
+.app-tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+.app-tab:hover:not(.active){color:var(--text2)}
+
+/* CONTENT */
+.app-content{flex:1;overflow-y:auto;padding:16px}
+
+/* CHAPTER NAV */
+.chap-header{
+  background:var(--bg3);border:0.5px solid var(--border2);border-radius:12px;
+  padding:16px 18px;margin-bottom:16px;position:relative;overflow:hidden;
+}
+.chap-header::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--gold),var(--gold2),transparent);
+}
+.chap-num{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px}
+.chap-title{font-size:19px;font-weight:600;color:var(--text)}
+.chap-prog-text{font-size:12px;color:var(--text3);margin-top:8px}
+.chap-bar-bg{background:var(--border);border-radius:99px;height:4px;margin-top:5px;overflow:hidden}
+.chap-bar-fill{height:4px;border-radius:99px;background:var(--gold);transition:width 0.4s}
+
+.chap-nav{display:flex;justify-content:space-between;align-items:center;margin-top:20px;padding-top:14px;border-top:0.5px solid var(--border)}
+.nav-btn{
+  display:flex;align-items:center;gap:6px;padding:8px 14px;
+  border-radius:8px;border:0.5px solid var(--border2);background:var(--bg3);
+  font-size:13px;font-weight:500;color:var(--text);cursor:pointer;transition:all 0.15s;
+}
+.nav-btn:hover{border-color:var(--gold);color:var(--gold)}
+.nav-btn.hidden{visibility:hidden}
+.chap-dots{display:flex;gap:7px}
+.chap-dot{width:8px;height:8px;border-radius:50%;background:var(--border2);cursor:pointer;transition:all 0.15s}
+.chap-dot.active{background:var(--gold)}
+
+/* STEPS */
+.step{
+  display:flex;gap:12px;align-items:flex-start;
+  padding:12px 14px;border-radius:10px;
+  border:0.5px solid var(--border);background:var(--bg3);
+  margin-bottom:8px;cursor:pointer;transition:border-color 0.15s,background 0.15s;
+  user-select:none;
+}
+.step:hover{border-color:var(--border2)}
+.step.step-done{border-color:var(--green-border);background:var(--green-bg)}
+.step-check{
+  width:18px;height:18px;border-radius:5px;border:1.5px solid var(--border2);
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  transition:all 0.15s;margin-top:1px;
+}
+.step-check.checked{background:var(--green);border-color:var(--green)}
+.step-num{
+  min-width:22px;height:22px;border-radius:50%;background:var(--bg4);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:500;color:var(--text3);margin-top:1px;flex-shrink:0;
+  border:0.5px solid var(--border);
+}
+.step-body{flex:1;min-width:0}
+.step-text{font-size:14px;color:var(--text);line-height:1.5}
+.step-text.done{color:var(--text3);text-decoration:line-through}
+.ip-tag{
+  display:inline-block;font-size:11px;padding:1px 8px;border-radius:5px;
+  margin-left:6px;vertical-align:middle;font-weight:500;
+}
+.ip-on{background:var(--green-bg);color:var(--green2);border:0.5px solid var(--green-border)}
+.ip-off{background:var(--red-bg);color:var(--red);border:0.5px solid var(--red-border)}
+
+/* NOTE */
+.note-block{
+  margin-top:8px;background:var(--warn-bg);
+  border-left:2px solid var(--warn);border-radius:0 7px 7px 0;
+  padding:7px 12px;font-size:12px;color:var(--warn);line-height:1.5;
+  white-space:pre-line;
+}
+
+/* DONJON BLOCK */
+.donjon-block{
+  margin-top:10px;background:var(--bg4);border-radius:9px;
+  border:0.5px solid var(--border);overflow:hidden;
+}
+.donjon-header{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:10px 12px;border-bottom:0.5px solid var(--border);
+}
+.dj-info .dj-name{font-size:13px;font-weight:600;color:var(--text)}
+.dj-info .dj-boss{font-size:11px;color:var(--text3);margin-top:2px}
+.dj-link{
+  display:flex;align-items:center;gap:5px;font-size:11px;font-weight:500;
+  color:var(--gold);background:var(--gold-bg);border:0.5px solid var(--gold-dim);
+  border-radius:6px;padding:4px 10px;text-decoration:none;white-space:nowrap;
+  flex-shrink:0;transition:all 0.15s;
+}
+.dj-link:hover{background:#2a1a08;border-color:var(--gold)}
+.dj-succes-wrap{padding:8px 12px}
+.dj-succes-title{font-size:10px;font-weight:600;color:var(--text3);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.08em}
+.succes-row{display:flex;align-items:center;gap:8px;padding:4px 0;cursor:pointer;user-select:none}
+.succes-row+.succes-row{border-top:0.5px solid var(--border)}
+.scheck{
+  width:15px;height:15px;border-radius:3px;border:1.5px solid var(--border2);
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.15s;
+}
+.scheck.on{background:var(--green);border-color:var(--green)}
+.badge{font-size:11px;padding:2px 10px;border-radius:5px;border:0.5px solid;font-weight:500}
+.badge.done{opacity:0.3;text-decoration:line-through}
+.b-zombie{background:#150d28;color:#c0a0f8;border-color:#3d2870}
+.b-premier{background:#080f1e;color:#6aaae8;border-color:#1e3a60}
+.b-special{background:var(--gold-bg);color:var(--gold);border-color:var(--gold-dim)}
+.b-versatile{background:#081a10;color:#4ed490;border-color:#1a4828}
+.b-monstres{background:#180808;color:#e08080;border-color:#481818}
+.b-misanthrope{background:#180810;color:#e080b0;border-color:#481830}
+.b-collant{background:#1a0808;color:#e0a060;border-color:#503010}
+.b-prudent{background:#081018;color:#60c0e8;border-color:#184060}
+.b-blitzkrieg{background:#180a00;color:#f09030;border-color:#503010}
+.b-dernier{background:#0a0a1a;color:#a0a0f0;border-color:#303060}
+.b-nomade{background:#0a1510;color:#70d890;border-color:#206040}
+.b-hardi{background:#1a0818;color:#e060e0;border-color:#501850}
+.b-statue{background:#101010;color:#c0c0c0;border-color:#404040}
+.b-main{background:#080e18;color:#50b0e8;border-color:#184060}
+.b-duel{background:#180818;color:#c060c0;border-color:#481848}
+.b-focus{background:#180800;color:#e8a030;border-color:#503010}
+.b-barbare{background:#180808;color:#e05050;border-color:#501010}
+.b-circulez{background:#100818;color:#b060d0;border-color:#401860}
+.b-econome{background:#081808;color:#60d060;border-color:#186018}
+.b-liberte{background:#0a1808;color:#80e040;border-color:#285010}
+.b-intouchable{background:#080818;color:#8080f0;border-color:#202060}
+.b-tps{background:#181008;color:#e0b040;border-color:#504010}
+.b-default{background:var(--bg3);color:var(--text2);border-color:var(--border2)}
+
+/* RESSOURCES DANS DONJON */
+.dj-ressources{padding:8px 12px;border-top:0.5px solid var(--border)}
+.dj-res-title{font-size:10px;font-weight:600;color:var(--text3);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.08em}
+.res-row{display:flex;align-items:center;gap:8px;padding:4px 0}
+.res-row+.res-row{border-top:0.5px solid var(--border)}
+.res-name{font-size:12px;color:var(--text2);flex:1}
+.res-input-wrap{display:flex;align-items:center;gap:6px}
+.res-input{
+  width:52px;background:var(--bg2);border:0.5px solid var(--border2);
+  border-radius:5px;padding:3px 6px;font-size:12px;color:var(--text);
+  text-align:right;transition:border-color 0.15s;
+}
+.res-input:focus{outline:none;border-color:var(--gold)}
+.res-total{font-size:12px;color:var(--text3)}
+.res-ok{color:var(--green2);font-size:11px;font-weight:600}
+.res-bar{width:60px;height:4px;background:var(--border);border-radius:99px;overflow:hidden}
+.res-bar-fill{height:4px;border-radius:99px;background:var(--gold);transition:width 0.3s}
+.res-bar-fill.full{background:var(--green)}
+
+/* RESSOURCES 2 COLONNES */
+.res-deux-col{display:flex;border-top:0.5px solid var(--border);margin-top:6px}
+.res-col-kwakwa{flex:1;padding:6px 12px;display:flex;flex-direction:column;gap:3px}
+.res-col-restuff{flex:1;padding:6px 12px;display:flex;flex-direction:column;gap:3px;border-left:2px solid var(--gold-dim)}
+.res-col-full{border-left:none;flex:1}
+.restuff-label{font-size:10px;font-weight:600;color:var(--gold);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.restuff-label::before{content:'';width:3px;height:10px;background:var(--gold);border-radius:2px;flex-shrink:0}
+
+/* SUCCES HORIZONTAL */
+.dj-body{padding:8px 12px}
+.dj-succes-horiz{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.suc-chip{display:flex;align-items:center;gap:5px;cursor:pointer;user-select:none;padding:2px 0}
+.suc-chip.suc-done .badge{opacity:0.3;text-decoration:line-through}
+
+/* NOTE INLINE — banderole complète lisible */
+.dj-name-row{display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap}
+.dj-note-pill{
+  font-size:11px;font-weight:500;color:var(--warn);
+  background:var(--warn-bg);border:0.5px solid var(--warn-border);
+  border-radius:5px;padding:3px 8px;line-height:1.5;
+  white-space:pre-line;
+}
+
+/* RESSOURCES INLINE — compact */
+.dj-res-inline{border-top:0.5px solid var(--border);padding-top:6px;margin-top:4px;display:flex;flex-direction:column;gap:3px}
+.res-inline-row{display:flex;align-items:center;gap:6px;padding:1px 0;flex-wrap:nowrap}
+.res-inline-name{font-size:12px;font-weight:500;color:#e05555;white-space:nowrap}
+.res-inline-name.full{color:var(--green2)}
+.res-inline-ctrl{display:flex;align-items:center;gap:4px;flex-shrink:0;white-space:nowrap}
+.res-input-sm{width:44px;background:var(--bg2);border:0.5px solid var(--border2);border-radius:4px;padding:1px 5px;font-size:11px;color:var(--text);text-align:right}
+.res-input-sm:focus{outline:none;border-color:var(--gold)}
+.res-inline-sep{font-size:11px;color:var(--text3);white-space:nowrap}
+.res-bar-sm{width:50px;height:3px;background:var(--border);border-radius:99px;overflow:hidden;flex-shrink:0}
+.res-bar-sm-fill{height:3px;border-radius:99px;background:var(--gold);transition:width 0.3s}
+.res-bar-sm-fill.full{background:var(--green)}
+.res-ok-sm{font-size:11px;font-weight:600;color:var(--green2)}
+
+/* ACCORDEON CRAFT */
+.craft-chap{margin-bottom:16px;background:var(--bg3);border:0.5px solid var(--border2);border-radius:10px;overflow:hidden}
+.craft-chap-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 14px;cursor:pointer;user-select:none;transition:background 0.15s;
+}
+.craft-chap-header:hover{background:var(--bg4)}
+.craft-chap-title{font-size:14px;font-weight:600;color:var(--text)}
+.craft-chap-arrow{font-size:12px;color:var(--text3);transition:transform 0.2s}
+.craft-chap-arrow.open{transform:rotate(180deg)}
+.craft-chap-body{display:none;padding:0 14px 12px}
+.craft-chap-body.open{display:block}
+/* DONJON COMPLET BADGE */
+.dj-complet-btn{
+  margin:8px 12px;padding:7px 12px;border-radius:7px;
+  border:0.5px solid var(--border2);background:var(--bg3);
+  font-size:12px;font-weight:600;color:var(--text3);text-align:center;
+  transition:all 0.3s;
+}
+.dj-complet-btn.complet{
+  border-color:var(--green-border);background:var(--green-bg);color:var(--green2);
+}
+
+/* PROGRESSION */
+.prog-card{
+  background:var(--bg3);border:0.5px solid var(--border);border-radius:12px;
+  padding:16px 18px;margin-bottom:12px;
+}
+.prog-label{font-size:13px;font-weight:500;color:var(--text);margin-bottom:10px;display:flex;justify-content:space-between}
+.prog-pct{color:var(--gold);font-weight:600}
+.bar-bg{background:var(--border);border-radius:99px;height:6px;overflow:hidden}
+.bar-fill{height:6px;border-radius:99px;background:var(--gold);transition:width 0.4s}
+.bar-fill.full{background:var(--green)}
+.prog-sub{font-size:12px;color:var(--text3);margin-top:6px}
+.sec-label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin:20px 0 10px}
+.mini-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.mini-label{font-size:13px;color:var(--text2);flex:1}
+.mini-pct{font-size:13px;font-weight:500;color:var(--gold);min-width:36px;text-align:right}
+.mini-bar{flex:2;background:var(--border);border-radius:99px;height:4px;overflow:hidden}
+.mini-fill{height:4px;border-radius:99px;background:var(--gold);transition:width 0.4s}
+
+/* SUCCES RESTANTS */
+.todo-card{
+  background:var(--bg3);border:0.5px solid var(--border);
+  border-radius:10px;padding:12px 14px;margin-bottom:8px;
+}
+.todo-chap{font-size:11px;color:var(--text3);margin-bottom:3px}
+.todo-dj{font-size:13px;font-weight:600;color:var(--text);margin-bottom:8px}
+.todo-badges{display:flex;gap:6px;flex-wrap:wrap}
+.empty-state{font-size:14px;color:var(--text3);text-align:center;padding:3rem 0}
+
+/* ATELIER CRAFT */
+.craft-section{margin-bottom:24px}
+.craft-zone-title{
+  font-size:13px;font-weight:600;color:var(--gold2);
+  padding:8px 12px;background:var(--gold-bg);border-left:2px solid var(--gold);
+  border-radius:0 7px 7px 0;margin-bottom:8px;
+}
+.craft-row{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 12px;background:var(--bg3);border:0.5px solid var(--border);
+  border-radius:8px;margin-bottom:6px;
+}
+.craft-name{font-size:13px;color:var(--text);flex:1}
+.craft-input-wrap{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.craft-input{
+  width:56px;background:var(--bg2);border:0.5px solid var(--border2);
+  border-radius:5px;padding:4px 7px;font-size:13px;color:var(--text);
+  text-align:right;transition:border-color 0.15s;
+}
+.craft-input:focus{outline:none;border-color:var(--gold)}
+.craft-sep{font-size:12px;color:var(--text3)}
+.craft-total{font-size:13px;font-weight:600;color:var(--text2);min-width:32px}
+.craft-bar{width:80px;height:5px;background:var(--border);border-radius:99px;overflow:hidden}
+.craft-bar-fill{height:5px;border-radius:99px;background:var(--gold);transition:width 0.3s}
+.craft-bar-fill.full{background:var(--green)}
+
+/* RESSOURCES MANQUANTES (Sacri) */
+.manq-zone{margin-bottom:20px}
+.manq-zone-title{
+  font-size:12px;font-weight:600;color:var(--text2);
+  text-transform:uppercase;letter-spacing:0.06em;
+  padding:6px 10px;background:var(--bg3);border:0.5px solid var(--border2);
+  border-radius:7px;margin-bottom:8px;display:flex;align-items:center;gap:7px;
+}
+.manq-zone-title::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--gold);flex-shrink:0}
+.manq-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:7px 12px;background:var(--bg3);border:0.5px solid var(--border);
+  border-radius:7px;margin-bottom:5px;
+}
+.manq-name{font-size:13px;color:var(--text2)}
+.manq-missing{font-size:13px;font-weight:600;color:var(--red)}
+.manq-ok{font-size:13px;font-weight:600;color:var(--green2)}
+
+/* CHAPTER HIDDEN */
+.chapter-panel{display:none}
+.chapter-panel.active{display:block}
+
+/* SVG CHECK */
+.chk{display:none}
+.checked .chk, .on .chk{display:block}
+
+</style>
+</head>
+<body>
+
+<!-- PROFILE SCREEN -->
+<div id="profile-screen">
+  <div class="profile-logo">
+    <div class="logo-icon">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+        <polygon points="14,2 17,10 26,10 19,16 22,24 14,19 6,24 9,16 2,10 11,10" fill="#e8a630"/>
+      </svg>
+    </div>
+    <h1>GuideDuCoteam</h1>
+    <p>Sélectionne ton profil pour continuer</p>
+  </div>
+  <div class="profile-cards">
+    <div class="profile-card" onclick="selectProfile('pvm')">
+      <div class="pc-icon">⚔️</div>
+      <div class="pc-name">Team PvM</div>
+    </div>
+    <div class="profile-card" onclick="selectProfile('sacri')">
+      <div class="pc-icon">🩸</div>
+      <div class="pc-name">Team Sacrieur</div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+  <div class="app-header">
+    <div class="header-left">
+      <div class="header-logo">
+        <svg width="14" height="14" viewBox="0 0 16 16">
+          <polygon points="8,1 10,6 15,6 11,10 13,15 8,12 3,15 5,10 1,6 6,6" fill="#e8a630"/>
+        </svg>
+      </div>
+      <div>
+        <div class="header-title">GuideDuCoteam</div>
+        <div class="header-sub" id="header-sub">—</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <span id="sync-status" style="font-size:11px;color:#3db868">✓ Sync</span>
+      <div class="profile-badge" onclick="switchProfile()">
+        <div class="pb-dot"></div>
+        <span id="profile-name">—</span>
+        <span style="color:var(--text3)">↕</span>
+      </div>
+    </div>
+  </div>
+  <div class="app-tabs" id="app-tabs"></div>
+  <div class="app-content" id="app-content"></div>
+</div>
+
+<script>
+// ============================================================
+// DONNÉES
+// ============================================================
+const RESSOURCES_PAR_ZONE = {
+  "Antre du Dragon Cochon": [{nom:"Groin du Dragon Cochon",qte:6},{nom:"Fragment de Gorgouille",qte:3}],
+  "Antre de la Reine Nyée": [{nom:"Fil Néfileuse",qte:26},{nom:"Laine de Dardalaine",qte:23},{nom:"Dent de Gargantul",qte:11},{nom:"Glande D'arak-Hai",qte:3},{nom:"Soie Baveuse",qte:14},{nom:"Œil de Saltik",qte:7},{nom:"Chélicèress d'Arapex",qte:1}],
+  "Cale de l'Arche d'Otomaï": [{nom:"Chicot du Flib",qte:22},{nom:"Etoffe de Gourlo le Terrible",qte:6},{nom:"Humérus du Sparo",qte:1},{nom:"Poudre explosive de Gourlo",qte:4}],
+  "Cimetière des Mastodontes": [{nom:"Queue de Fennex",qte:60},{nom:"Œil de Léolhyène",qte:37},{nom:"Sable Fin",qte:8},{nom:"Cœur du Mantiscore",qte:7},{nom:"Carapace Mantiscore",qte:33},{nom:"Queue de Scordion Bleu",qte:24},{nom:"Ecailles d'Ouroboulos",qte:30},{nom:"Boule de Boulépique",qte:22}],
+  "Clos des Blops Indigo": [{nom:"Feuille de Blop Royal",qte:3},{nom:"Fleur de Blop Indigo Royal",qte:1},{nom:"Blop mort",qte:2},{nom:"Bout de Blop Indigo",qte:2}],
+  "Chapiteau des Magik Riktus": [{nom:"Bourgeon de Pirolienne",qte:16},{nom:"Bombe de Graboule",qte:45},{nom:"Roue de Tivelo",qte:57},{nom:"Tissu de Graboule",qte:2},{nom:"Peau de Roukouto",qte:1},{nom:"Faux Visage de Choudini",qte:33},{nom:"Bandelettes",qte:12},{nom:"Couteau de Roukouto",qte:66},{nom:"Peau de Tivelo",qte:4},{nom:"Etoffe Choudini",qte:4},{nom:"Avoine Magique",qte:4}],
+  "Domaine Ancestral": [{nom:"Racine d'Abraknyde Ancestral",qte:5},{nom:"Ambre d'Abraknyde Sombre",qte:4}],
+  "Laboratoire de Brumen Tintorias": [{nom:"Duvet de Nelween",qte:12},{nom:"Babine de Macien",qte:64},{nom:"Kolérat Mort",qte:4}],
+  "Nid du Kwakwa": [{nom:"Bec du Kwakwa",qte:1},{nom:"Artefact Pandawuchu Vent",qte:24}],
+  "Château du Wa Wabbit / Terrier": [{nom:"Poils de Barbe du Grand Pa Wabbit",qte:18},{nom:"Barbe du Wa Wobot",qte:16}],
+  "Village Kanniboul": [{nom:"Boules de Kanniboul",qte:6}],
+  "Zone Marécage": [{nom:"Ecaille de Chef Crocodaille",qte:11}],
+  "Zone Montagne des Craqueleurs": [{nom:"Silex",qte:48}],
+  "Zone Pic de Cania": [{nom:"Tranche Magique de KramBwork",qte:4},{nom:"Oreille de Medibwork",qte:47},{nom:"Cuir Violet de Mégabwork",qte:5},{nom:"Botte trouée de Mégabwork",qte:47},{nom:"Tissu Pourpre",qte:96},{nom:"Osier Enchanté",qte:4},{nom:"Peau de Krambwork",qte:58},{nom:"Scalp de Bizarbwork",qte:1}],
+  "Zone Plaine Rocheuse": [{nom:"Œil de Craquelope",qte:16},{nom:"Langue de Craquelope",qte:2},{nom:"Fragment de Pierre Pointue",qte:2}],
+  "Zone Territoire Dragodindes Sauvages": [{nom:"Pic de Dragodinde Rousse Sauvage",qte:20},{nom:"Aile de Dragodinde",qte:2},{nom:"Pic de Dragodinde",qte:14}],
+  "Zone Route Rocailleuse": [{nom:"Œil de Kanigrou",qte:6},{nom:"Ongle du Kanigrou",qte:8},{nom:"Champignon",qte:28}],
+  "Zone Canyon Sauvage": [{nom:"Poils de Koalak Griotte",qte:6}],
+  "Zone Lac Enchanté": [{nom:"Boomerang du Dok Alako",qte:1},{nom:"Peau de Koalak Immature",qte:11}],
+  "Zone Bordure de Brakmar": [{nom:"Relique Familiale",qte:30}],
+  "Zone Saharach": [{nom:"Artefact Pandawushu Feu",qte:15}],
+  "Donjon Bworks": [{nom:"Artefact Pandawushu Roc",qte:24}],
+  "Grotte Heske": [{nom:"Corail Magistral",qte:2},{nom:"Sacrum Magistral",qte:6}],
+  "Epreuve de Draegnerys": [{nom:"Œuf de Dragoeuf Argile",qte:17},{nom:"Cheveux de Draegnerys",qte:2}]
+};
+
+// ============================================================
+// RESSOURCES RESTUFF 90 + Gelano FM et Pioute
+// ============================================================
+const RESTUFF90_RES = {
+  "Ressources Diverses":[{nom:"Pépite",qte:27030},{nom:"Galet rutilant",qte:187},{nom:"Tourmaline",qte:124},{nom:"Galet cramoisi",qte:89},{nom:"Galet Lunaire",qte:85},{nom:"Galet rayonnant",qte:61},{nom:"Substrat de Fourré",qte:51},{nom:"Kriptonite",qte:38},{nom:"Galet Saisonnier",qte:35},{nom:"Substrat de Bosquet",qte:32},{nom:"Kouartz",qte:30},{nom:"Trame Dimensionnelle",qte:29},{nom:"Substrat de Futaie",qte:27},{nom:"Substrat de Forêt",qte:27},{nom:"Magnésite",qte:23},{nom:"Kobalite",qte:21},{nom:"Bakélélite",qte:17},{nom:"Substrat de Fascine",qte:15},{nom:"Rutile",qte:14},{nom:"Galet Solaire",qte:12},{nom:"Substrat de Forêt primaire",qte:11},{nom:"Étoffe Mystérieuse",qte:3}],
+  "Épave du Grolandais Violent":[{nom:"Mât de Fantômat",qte:222},{nom:"Étoffe de Vigie Pirate",qte:115},{nom:"Queue de Fantomalamère",qte:70},{nom:"Œil de Vigie Pirate",qte:24},{nom:"Coquille de Harpirate",qte:29},{nom:"Poil de Ben le Ripate",qte:27},{nom:"Bouée de Fantomalamère",qte:18},{nom:"Scapula de Ben le Ripate",qte:9},{nom:"Pince du Fancrôme",qte:4},{nom:"Dent de Fantômat",qte:2}],
+  "Tanière du Meulou":[{nom:"Poils de Mulounoké",qte:168},{nom:"Canine de Mergranlou",qte:99},{nom:"Queue du Mulou",qte:96},{nom:"Dents de Mulou",qte:78},{nom:"Œil de Cocholou",qte:32},{nom:"Testicules de Cocholou",qte:27},{nom:"Scalp du Meulou",qte:18},{nom:"Testicules Magiques du Meulou",qte:3}],
+  "Dojo du Vent":[{nom:"Bracelet de Ino-Naru",qte:124},{nom:"Étoffe de Kurookin",qte:72},{nom:"Lame brisée de Lichangoro",qte:64},{nom:"Tête de lance de Fangshu",qte:60},{nom:"Ruban d'Uchiwang",qte:58},{nom:"Pelage aérodynamique",qte:32},{nom:"Piques à cheveux de Shihan",qte:21},{nom:"Écharpe de Hanshi",qte:16}],
+  "Cimetière des Mastodontes":[{nom:"Boule de Boulépique",qte:120},{nom:"Sable Fin",qte:12},{nom:"Artefact Pandawushu Feu",qte:3}],
+  "Canopée du Kimbo":[{nom:"Rembourrage de Meupette",qte:108},{nom:"Bave du Kaskargo",qte:72},{nom:"Sphénoïde du Kimbo",qte:12},{nom:"Croupion du Bitouf aérien",qte:10}],
+  "Miausolée du Pounicheur":[{nom:"Patte de Pupuce",qte:82},{nom:"Œil de Morcac",qte:67},{nom:"Palpe de Pikbul",qte:54},{nom:"Glande du Pounicheur",qte:15},{nom:"Biscuit de chance",qte:6}],
+  "Vallée de la Dame des Eaux":[{nom:"Sarbacane en Bambou",qte:71},{nom:"Salopette Kwapa",qte:62},{nom:"Concombre",qte:52},{nom:"Koinkoin de bain de Nagate",qte:44},{nom:"Eau de Kwapa",qte:25},{nom:"Akaslip d'Akakwa",qte:24},{nom:"Katana de Kwamouraï",qte:15}],
+  "Clairière du Chêne Mou":[{nom:"Feuille de Branche Soignante",qte:56},{nom:"Masque Cassé d'Araknotron Irascible",qte:55},{nom:"Patte d'Abrakne Irascible",qte:29},{nom:"Doigt de Branche Invocatrice",qte:28},{nom:"Bourgeon d'Abraknyde Sombre Irascible",qte:27},{nom:"Racine du Chêne Mou",qte:17},{nom:"Mandibule d'Abrakne Irascible",qte:11},{nom:"Ambre du Chêne Mou",qte:7},{nom:"Arakne Irascible Écrasée",qte:2},{nom:"Œil de Branche Soignante",qte:2}],
+  "Caverne d'El Piko":[{nom:"String de Pampactus",qte:54},{nom:"Moustaches de Cactoblongo",qte:48},{nom:"Maraca de Lévito",qte:22},{nom:"Jus de Cacterre",qte:6},{nom:"Étoile d'Or d'El Piko",qte:2},{nom:"Picot d'El Piko",qte:2}],
+  "Laboratoire du Tynril":[{nom:"Sépale de Nerbe",qte:180},{nom:"Écorce de Nerbe",qte:52},{nom:"Bractée de Chiendent",qte:47},{nom:"Carpelle de Brouture",qte:40},{nom:"Écorce de Chiendent",qte:25},{nom:"Ambre du Tynril",qte:11},{nom:"Talon d'achille de l'Abrakleur sombre",qte:3},{nom:"Coco du Bitouf Sombre",qte:1}],
+  "Repaire de Kharnozor":[{nom:"Coquille de Dragoss Protéiforme",qte:48},{nom:"Écaille de Dragoss Ardoise",qte:20},{nom:"Écaille de Dragoss Calcaire",qte:18},{nom:"Écaille de Dragoss Charbon",qte:10},{nom:"Dent du Kharnozor",qte:8}],
+  "Excavation du Mansot Royal":[{nom:"Peau de Mansobèse",qte:200},{nom:"Duvet de Mamansot",qte:62},{nom:"Plume du Mansot Royal",qte:36},{nom:"Arête géante du Shamansot",qte:22},{nom:"Bec du Timansot",qte:14},{nom:"Oreille du Fu Mansot",qte:10},{nom:"Œuf du Mansot Royal",qte:6}],
+  "Centre du Labyrinthe du Minotoror":[{nom:"Plume du Serpiplume",qte:24},{nom:"Peau de Minoskito",qte:20},{nom:"Poils du Minotoror",qte:17}],
+  "Serre du Royalmouth":[{nom:"Laine de Boufmouth légendaire",qte:40},{nom:"Cuir de Bouftonmouth",qte:22},{nom:"Laine du Royalmouth",qte:6},{nom:"Œil de Boufmouth de guerre",qte:4},{nom:"Queue du Royalmouth",qte:2}],
+  "Bibliothèque du Maître Corbac":[{nom:"Pierre de Topaze",qte:30},{nom:"Plume de Corbac Apprivoisé",qte:20},{nom:"Poil de Renarbo",qte:17},{nom:"Duvet du Maître Corbac",qte:8},{nom:"Cœur de Buveur",qte:5},{nom:"Topaze",qte:5}],
+  "Donjon des Forgerons":[{nom:"Bourse Suspecte",qte:30},{nom:"Sceau Royal Contrefait",qte:20}],
+  "Antre du Crocabulia":[{nom:"Aile de Draguaindrop",qte:50},{nom:"Croc de Dragoeuf Protecteur",qte:12},{nom:"Peau de Crocabulia",qte:12},{nom:"Corne brisée de Crocabulia",qte:3}],
+  "Goulet du Rasboul":[{nom:"Bec du Kido",qte:14},{nom:"Plume du Rasboul Majeur",qte:12},{nom:"Fragment de cerveau poli",qte:10},{nom:"Coco du Bitouf des Plaines",qte:5},{nom:"Boule polie",qte:4}],
+  "Volière de la Haute Truche":[{nom:"Duvet de Truchon",qte:38},{nom:"Patte de Gruche",qte:13},{nom:"Œuf de Haute Truche",qte:5}],
+  "Clos des Blops":[{nom:"Fleur de Blopignon",qte:20}],
+  "Antre du Dragon Cochon":[{nom:"Cuir de Porsalu",qte:20},{nom:"Fragment du Gorgouille",qte:3}],
+  "Akadémie des Gobs":[{nom:"Tambour de Gobaladée",qte:12}],
+  "Bambusaie de Damadrya":[{nom:"Langue de Grenufar",qte:12},{nom:"Pollen de Bulbiflore",qte:1},{nom:"Nectar de l'Orient",qte:1}],
+  "Repaire de Skeunk":[{nom:"Poil de Skeunk",qte:12},{nom:"Pense-bête de Rubise",qte:2}],
+  "Mégalithe de Fraktale":[{nom:"Pixel de Fraktale",qte:11}],
+  "Atelier du Tanukouï San":[{nom:"Poterie cassée de Lolojiki",qte:10},{nom:"Masque de Shinibaru",qte:5}],
+  "Château du Wa Wabbit":[{nom:"Dent de Wabbit",qte:56},{nom:"Moustaches de Tiwabbit",qte:10}],
+  "Cache de Kankreblath":[{nom:"Antennes de Vilinsekt",qte:10}],
+  "Garde-Manger du Rat Blanc":[{nom:"Lance-Pierre de Scélée Rate",qte:10},{nom:"Crinière de Rat Blanc",qte:6}],
+  "Domaine Ancestral":[{nom:"Écorce d'Abrakne Sombre",qte:10},{nom:"Toile d'Abrakne Sombre",qte:5},{nom:"Arakne Écrabouillée",qte:1}],
+  "Terrier du Wa Wabbit":[{nom:"Casque de Wobot",qte:6},{nom:"Estomac de Black Wo Wabbit",qte:5},{nom:"Barbe du Wa Wobot",qte:4},{nom:"Lunettes de Tiwobot",qte:4},{nom:"Bâton de Blanc Pa Wabbit",qte:3},{nom:"Boulon Wabbit",qte:1}],
+  "Antre du Blop Multicolore Royal":[{nom:"Feuille de Blop Multicolore Royal",qte:8}],
+  "Épreuve de Draegnerys":[{nom:"Étoffe de Draegnerys",qte:8},{nom:"Œuf de Dragoeuf Argile",qte:1}],
+  "Laboratoire de Brumen Tintorias":[{nom:"Collier Cassé de Macien",qte:2},{nom:"Fiole de fumée de Nelween",qte:1}],
+  "Cale de l'Arche d'Otomaï":[{nom:"Humérus du Sparo",qte:2},{nom:"Étoffe de Gourlo le Terrible",qte:2}],
+  "Bateau du Chouque":[{nom:"Nœud de Marin",qte:18}],
+  "Antre de la Reine Nyée":[{nom:"Œil de Saltik",qte:18},{nom:"Globule de Nyée",qte:2},{nom:"Glande d'Arak-haï",qte:12}],
+  "Refuge Sylvestre":[{nom:"Fourrure de Timongouste",qte:18},{nom:"Plume de Thomondor",qte:6}],
+  "Théâtre de Dramak":[{nom:"Chaussette trouée de Dramak",qte:3}],
+  "Arbre de Moon":[{nom:"Peau de Moon",qte:1},{nom:"Étoffe Magique de Moon",qte:1}],
+  "Pitons Rocheux des Craqueleurs":[{nom:"Pierre de Diamant",qte:4},{nom:"Pierre de Saphir",qte:3},{nom:"Émeraude",qte:2}],
+  "Sousouricière du Rat Noir":[{nom:"Poil de Rat Brâkmarien",qte:5}],
+  "Tofulailler Royal":[{nom:"Plume de Tofu Royal",qte:6},{nom:"Croupion de Tofuzmo",qte:4},{nom:"Œuf Pourri",qte:2}],
+  "Caverne du Koulosse":[{nom:"Peau de Koalak Immature",qte:22},{nom:"Laine du Boufcoul",qte:10}],
+  "Chapiteau des Magik Riktus":[{nom:"Faux Visage de Choudini",qte:9},{nom:"Étoffe de Choudini",qte:4},{nom:"Tissu de Graboule",qte:4}],
+  "Village Kanniboul":[],
+  "Zone Zoth":[{nom:"Étoffe Zoth",qte:80},{nom:"Tibia du Guerrier Zoth",qte:62},{nom:"Calumet Zoth",qte:40},{nom:"Kristalite",qte:18},{nom:"Rotule du Disciple Zoth",qte:14},{nom:"Écusson du Sergent Zoth",qte:4}],
+  "Zone Bandit Manchot":[{nom:"Tatouage de Mauvais Garçon",qte:70}],
+  "Zone Champa":[{nom:"Lamelle de Champa Marron",qte:50},{nom:"Lamelle de Champa Vert",qte:20},{nom:"Lamelle de Champa Bleu",qte:10}],
+  "Zone Tourbière":[{nom:"Étoffe de Ouassingue",qte:36},{nom:"Faux menton du Bourbassingue",qte:18},{nom:"Dent de Bourbassingue",qte:15},{nom:"Jus de Ouassingue",qte:13},{nom:"Tourbe séchée de Tourbassingue",qte:5}],
+  "Zone Dent de Pierre":[{nom:"Griffe de Félygiène",qte:40},{nom:"Boucle d'Orfélin",qte:9},{nom:"Peau de Kanihilan",qte:1}],
+  "Zone Pin Perdu":[{nom:"Poils de Smilomouth",qte:32},{nom:"Défense du Sanglacier",qte:28},{nom:"Cuir du Sanglacier",qte:12},{nom:"Dent de Smilomouth",qte:5},{nom:"Étoffe de Kaniglou",qte:2}],
+  "Zone Morkitu":[{nom:"Poils de Guerrier Koalak",qte:32},{nom:"Fémur de Koalak Farouche",qte:20},{nom:"Boomerang du Koalak Sanguin",qte:20},{nom:"Poils de Barbe du Warko Violet",qte:14}],
+  "Zone Céphale":[{nom:"Cawotte Transgénique",qte:32},{nom:"Œil de Wabbit Céphale",qte:23},{nom:"Dents de Wabbit Vampire",qte:22},{nom:"Sang de Wabbit Garou",qte:18},{nom:"Feuille de Cawotman",qte:12},{nom:"Oreilles de Wabbit Fluo",qte:4}],
+  "Zone Feudala":[{nom:"Poils de Pétartifoux",qte:20},{nom:"Peau de Rouquette",qte:10},{nom:"Étoffe de Firefoux",qte:10},{nom:"Queue Magique de Founoroshi",qte:2}],
+  "Zone Dopeul":[{nom:"Papier Charbon",qte:20}],
+  "Zone Bordure de Brakmar":[{nom:"Sueur Froide de Fantôme",qte:20}],
+  "Zone Hell Mina":[{nom:"Pousse de Malzerb",qte:20},{nom:"Porte-bonheur de Malalfa",qte:10}],
+  "Zone Plaine Rocheuse":[{nom:"Fragment de Pierre Polie",qte:12}],
+  "Zone Route Rocailleuse":[{nom:"Œil de Kanigrou",qte:12}],
+  "Zone Rivage Sufokia":[{nom:"Muqueuse de Moumoule",qte:10},{nom:"Paupière d'Étoile",qte:10}],
+  "Zone Cimetière Grobe":[{nom:"Croissant de Tsukinochi",qte:10}],
+  "Zone Pic de Cania":[{nom:"Oreille de Médibwork",qte:11},{nom:"Tranche Magique de Krambwork",qte:2}],
+  "Zone Bois de Litneg":[{nom:"Crinière de Troollaraj",qte:22},{nom:"Slip de Troollaraj",qte:1}],
+  "Zone Cimetière Primitif":[{nom:"Cubitus de Momie Koalak",qte:4}],
+  "Zone Massif Cania":[{nom:"Bidule inutile",qte:6}],
+  "Zone Orée de la Forêt":[{nom:"Sourcils de Tronknyde",qte:1}]
+};
+
+// Zones dans RESTUFF90_RES qui sont aussi dans les zones du guide (onglet Zone)
+const RESTUFF90_ZONES = ["Zone Zoth","Zone Bandit Manchot","Zone Champa","Zone Tourbière","Zone Dent de Pierre","Zone Pin Perdu","Zone Morkitu","Zone Céphale","Zone Feudala","Zone Dopeul","Zone Bordure de Brakmar","Zone Hell Mina","Zone Plaine Rocheuse","Zone Route Rocailleuse","Zone Rivage Sufokia","Zone Cimetière Grobe","Zone Pic de Cania","Zone Bois de Litneg","Zone Cimetière Primitif","Zone Massif Cania","Zone Orée de la Forêt","Ressources Diverses"];
+
+// ============================================================
+// RESSOURCES STUFF TEAM SACRIEUR
+// ============================================================
+const SACRI_RES = {
+  "Ressources Diverses": [
+    {nom:"Rose des Sables", qte:180},
+    {nom:"Bakélélite", qte:17},
+    {nom:"Substrat de Fascine", qte:10},
+    {nom:"Substrat de Futaie", qte:8},
+    {nom:"Magnésite", qte:6}
+  ],
+  "Zone Marécage": [
+    {nom:"Écaille de Chef Crocodaille", qte:63},
+    {nom:"Dent de Crocodaille", qte:34},
+    {nom:"Écaille de Crocodaille", qte:17},
+    {nom:"Os de Crocodaille", qte:7},
+    {nom:"Crâne de Chef Crocodaille", qte:6}
+  ],
+  "Cimetière des Mastodontes": [
+    {nom:"Queue de Fennex", qte:26},
+    {nom:"Queue de Scordion Bleu", qte:12},
+    {nom:"Carapace du Mantiscore", qte:10},
+    {nom:"Écailles d'Ouroboulos", qte:9},
+    {nom:"Œil de Léolhyène", qte:7},
+    {nom:"Cœur du Mantiscore", qte:6},
+    {nom:"Sable Fin", qte:3},
+    {nom:"Boule de Boulépique", qte:2}
+  ],
+  "Zone Pic de Cania": [
+    {nom:"Peau de Krambwork", qte:60},
+    {nom:"Tissu Pourpre", qte:56},
+    {nom:"Oreille de Médibwork", qte:16},
+    {nom:"Botte trouée de Mégabwork", qte:14},
+    {nom:"Tranche Magique de Krambwork", qte:2},
+    {nom:"Cuir Violet de Mégabwork", qte:2}
+  ],
+  "Laboratoire de Brumen Tintorias": [
+    {nom:"Duvet de Nelween", qte:28},
+    {nom:"Babines de Macien", qte:15},
+    {nom:"Plume de Crowneille", qte:16},
+    {nom:"Œil de Crowneille", qte:2},
+    {nom:"Kolérat Mort", qte:2},
+    {nom:"Fiole de fumée de Nelween", qte:2},
+    {nom:"Papatte de Croc Gland", qte:14},
+    {nom:"Graine de Scorbute", qte:32}
+  ],
+  "Nid du Kwakwa": [
+    {nom:"Artefact Pandawushu Vent", qte:12}
+  ],
+  "Cale de l'Arche d'Otomaï": [
+    {nom:"Chicot du Flib", qte:11},
+    {nom:"Morceau de caleçon de Gourlo", qte:6},
+    {nom:"Poudre explosive", qte:2}
+  ],
+  "Château du Wa Wabbit / Terrier": [
+    {nom:"Poils de Barbe du Grand Pa Wabbit", qte:9},
+    {nom:"Barbe du Wa Wobot", qte:4}
+  ],
+  "Zone Bordure de Brakmar": [
+    {nom:"Relique Familiale", qte:8}
+  ],
+  "Épreuve de Draegnerys": [
+    {nom:"Œuf de Dragoeuf Argile", qte:7}
+  ],
+  "Zone Territoire Dragodindes Sauvages": [
+    {nom:"Pic de Dragodinde", qte:7}
+  ],
+  "Zone Route Rocailleuse": [
+    {nom:"Osier Enchanté", qte:2},
+    {nom:"Œil de Kanigrou", qte:1},
+    {nom:"Fragment de Pierre Pointue", qte:1},
+    {nom:"Langue de Craquelope", qte:1}
+  ],
+  "Grotte Heske": [
+    {nom:"Sacrum Magistral", qte:3},
+    {nom:"Corail Magistral", qte:1}
+  ],
+  "Village Kanniboul": [
+    {nom:"Boules de Kanniboul", qte:3}
+  ],
+  "Pitons Rocheux des Craqueleurs": [
+    {nom:"Pierre du Craqueleur Légendaire", qte:6}
+  ]
+};
+
+const SACRI_ZONES = ["Ressources Diverses","Zone Marécage","Zone Pic de Cania","Zone Bordure de Brakmar","Zone Territoire Dragodindes Sauvages","Zone Route Rocailleuse"];
+
+const ZONES_SACRI_ONLY = ["Zone Marécage","Zone Montagne des Craqueleurs","Zone Plaine Rocheuse","Zone Territoire Dragodindes Sauvages","Zone Route Rocailleuse","Zone Canyon Sauvage","Zone Lac Enchanté","Zone Bordure de Brakmar","Zone Saharach"];
+
+function mkEtapes_Kwakwa(){
+  return [
+    {id:'kw1',texte:"Spawn monde des douze, rush Astrub boutique",ip:'off'},
+    {id:'kw2',texte:"Drop des pano Piou",ip:'off'},
+    {id:'kw3',texte:"Activer l'IP drop",ip:'on'},
+    {id:'kw4',texte:"Crypte de Kardorim",donjon:{nom:"Crypte de Kardorim",boss:"Kardorim",niv:10,url:"https://www.dofuspourlesnoobs.com/crypte-de-kardorim.html",succes:["Zombie","Premier","Spécial","Succès monstres"],zone:null}},
+    {id:'kw5',texte:"Château Ensablé",note:"Donner les tonneaux d'eau potable à la banque au zaap",donjon:{nom:"Château Ensablé",boss:"Mob l'Éponge",niv:20,url:"https://www.dofuspourlesnoobs.com/chateau-ensable.html",succes:["Misanthrope","Versatile","Spécial","Succès monstres"],zone:null}},
+    {id:'kw6',texte:"Grange du Tournesol Affamé",note:"Avant de partir, récupérer 1 Meuch",donjon:{nom:"Grange du Tournesol Affamé",boss:"Tournesol Affamé",niv:20,url:"https://www.dofuspourlesnoobs.com/grange-du-tournesol-affame.html",succes:["Collant","Premier","Spécial","Succès monstres"],zone:null}},
+    {id:'kw7',texte:"Cour du Bouftou Royal",note:"Avant de partir, récupérer 7 Chacha",donjon:{nom:"Cour du Bouftou Royal",boss:"Bouftou Royal",niv:30,url:"https://www.dofuspourlesnoobs.com/cour-du-bouftou-royal.html",succes:["Prudent","Blitzkrieg","Spécial","Succès monstres"],zone:null}},
+    {id:'kw8',texte:"Si niveau 40+ → Nid du Kwakwa (4 salles, max challenges)",note:"Percepteur lvl 40 dans le donjon\nPotion de rappel au boss",donjon:{nom:"Nid du Kwakwa",boss:"Kwakwa",niv:50,url:"https://www.dofuspourlesnoobs.com/nid-du-kwakwa.html",succes:["Zombie","Mains Propres","Spécial","Succès monstres"],zone:"Nid du Kwakwa"},syncId:"kwakwa"},
+    {id:'kw9',texte:"Brisage du surplus d'items Kwak",note:"Garder sur l'IP drop : 2 Kwak Terre - 2 Kwak Eau - 3 Kwak Air - 1 Kwak Feu"},
+    {id:'kw10',texte:"Étape brisage sur la team Sacrieurs",note:"FM Rapide des panoplies Kwak de la team PvM, demander à la team Sacri\nDemander également des runes GA PA pour les Chacha"},
+    {id:'kw11',texte:"Donjon des Scarafeuilles",note:"Percepteur lvl 40 dans le donjon",donjon:{nom:"Donjon des Scarafeuilles",boss:"Scarafeuille Doré",niv:30,url:"https://www.dofuspourlesnoobs.com/donjon-des-scarafeuilles.html",succes:["Zombie","Mains Propres","Spécial","Succès monstres"],zone:null}},
+    {id:'kw12',texte:"Donjon des Tofus",donjon:{nom:"Donjon des Tofus",boss:"Batofu",niv:40,url:"https://www.dofuspourlesnoobs.com/donjon-des-tofus.html",succes:["Statue","Versatile","Spécial","Succès monstres"],zone:null}},
+    {id:'kw13',texte:"Maison Fantôme",donjon:{nom:"Maison Fantôme",boss:"Boostache",niv:40,url:"https://www.dofuspourlesnoobs.com/maison-fantome.html",succes:["Misanthrope","Dernier","Spécial","Succès monstres"],zone:null}},
+    {id:'kw14',texte:"Donjon des Squelettes",donjon:{nom:"Donjon des Squelettes",boss:"Ossemonster",niv:40,url:"https://www.dofuspourlesnoobs.com/donjon-des-squelettes.html",succes:["Nomade","Premier","Spécial","Succès monstres"],zone:null}},
+    {id:'kw15',texte:"Cache de Kankreblath",donjon:{nom:"Cache de Kankreblath",boss:"Kankreblath",niv:40,url:"https://www.dofuspourlesnoobs.com/cache-de-kankreblath.html",succes:["Dernier","Collant","Spécial","Succès monstres"],zone:null}},
+    {id:'kw16',texte:"Akadémie des Gobs",donjon:{nom:"Akadémie des Gobs",boss:"Gob Kapitan",niv:45,url:"https://www.dofuspourlesnoobs.com/academie-des-gobs.html",succes:["Nomade","Premier","Spécial","Succès monstres"],zone:null}},
+    {id:'kw17',texte:"Donjon des Forgerons",donjon:{nom:"Donjon des Forgerons",boss:"Forgeron Souverain",niv:50,url:"https://www.dofuspourlesnoobs.com/donjon-des-forgerons.html",succes:["Nomade","Premier","Spécial","Succès monstres"],zone:null}},
+    {id:'kw17bis',texte:"Quatre salles Grotte Heske",note:"Vider les ressources au zaap Astrub après",donjon:{nom:"Grotte Heske",boss:"Hesque",niv:60,url:"https://www.dofuspourlesnoobs.com/grotte-hesque.html",succes:[],zone:"Grotte Heske"}},
+    {id:'kw18',texte:"Niveau 60 — Gelaxième Dimension",note:"Prier pour un drop Gelano, prioriser les challenges si fait avant demandé dans la quête\nPercepteur lvl 60 au boss\nCrafter des Gelano, voir pour un FM Vitalité",donjon:{nom:"Gelaxième Dimension",boss:"Gelano",niv:60,url:"https://www.dofuspourlesnoobs.com/gelaxieme-dimension.html",succes:["Duel","Collant","Spécial","Succès monstres"],zone:null},syncId:"gelaxieme"},
+    {id:'kw19',texte:"Donjon des Bworks",donjon:{nom:"Donjon des Bworks",boss:"Bworkette",niv:50,url:"https://www.dofuspourlesnoobs.com/donjon-des-bworks.html",succes:["Misanthrope","Premier","Spécial","Succès monstres"],zone:"Donjon Bworks"}},
+    {id:'kw20',texte:"Nid du Kwakwa — succès complets",donjon:{nom:"Nid du Kwakwa",boss:"Kwakwa",niv:50,url:"https://www.dofuspourlesnoobs.com/nid-du-kwakwa.html",succes:["Zombie","Mains Propres","Spécial","Succès monstres"],zone:"Nid du Kwakwa"},syncId:"kwakwa",syncSource:"kw8"},
+    {id:'kw21',texte:"Donjon des Larves",donjon:{nom:"Donjon des Larves",boss:"Larve Royale",niv:50,url:"https://www.dofuspourlesnoobs.com/donjon-des-larves.html",succes:["Prudent","Versatile","Spécial","Succès monstres"],zone:null}},
+    {id:'kw22',texte:"Gelaxième Dimension — 2ème passage",donjon:{nom:"Gelaxième Dimension",boss:"Gelano",niv:60,url:"https://www.dofuspourlesnoobs.com/gelaxieme-dimension.html",succes:["Duel","Collant","Spécial","Succès monstres"],zone:null},syncId:"gelaxieme",syncSource:"kw18"},
+    {id:'kw23',texte:"Grotte Heske",note:"Attention, One shot du boss sur allié",donjon:{nom:"Grotte Heske",boss:"Hesque",niv:60,url:"https://www.dofuspourlesnoobs.com/grotte-hesque.html",succes:["Hardi","Blitzkrieg","Succès monstres"],zone:"Grotte Heske"}},
+    {id:'kw24',texte:"Refuge Sylvestre",donjon:{nom:"Refuge Sylvestre",boss:"Sylvestre",niv:65,url:"https://www.dofuspourlesnoobs.com/refuge-sylvestre.html",succes:["Dernier","Prudent","Spécial","Succès monstres"],zone:null}},
+    {id:'kw25',texte:"Château du Wa Wabbit",note:"Pas besoin de quête / clef annexe",donjon:{nom:"Château du Wa Wabbit",boss:"Wa Wabbit",niv:60,url:"https://www.dofuspourlesnoobs.com/chateau-du-wa-wabbit.html",succes:["Hardi","Blitzkrieg","Spécial","Succès monstres"],zone:"Château du Wa Wabbit / Terrier"}},
+    {id:'kw26',texte:"Pitons Rocheux des Craqueleurs",note:"Attention à ne pas tomber, si il y a le chemin",donjon:{nom:"Pitons Rocheux des Craqueleurs",boss:"Craqueleur Royal",niv:70,url:"https://www.dofuspourlesnoobs.com/pitons-rocheux-des-craqueleurs.html",succes:["Prudent","Premier","Spécial","Succès monstres"],zone:"Zone Montagne des Craqueleurs"}},
+    {id:'kw27',texte:"Épreuve de Draegnerys",donjon:{nom:"Épreuve de Draegnerys",boss:"Draegnerys",niv:60,url:"https://www.dofuspourlesnoobs.com/epreuve-de-draegnerys.html",succes:["Focus","Hardi","Spécial","Succès monstres"],zone:"Epreuve de Draegnerys"}},
+    {id:'kw28',texte:"Cale de l'Arche d'Otomaï",donjon:{nom:"Cale de l'Arche d'Otomaï",boss:"Gourlo le Terrible",niv:70,url:"https://www.dofuspourlesnoobs.com/arche-dotomai.html",succes:["Premier","Econome","Spécial","Succès monstres"],zone:"Cale de l'Arche d'Otomaï"}},
+    {id:'kw29',texte:"Clos des Blops Indigo",note:"Percepteur lvl 60 au boss, priorité aux challenges\nRentrer dans le multicolore et potion de rappel",donjon:{nom:"Clos des Blops Indigo",boss:"Blop Indigo Royal",niv:60,url:"https://www.dofuspourlesnoobs.com/clos-des-blops.html",succes:["Duel","Prudent","Spécial","Succès monstres"],zone:"Clos des Blops Indigo"},syncId:"clos_blop"},
+    {id:'kw30',texte:"Village Kanniboul",donjon:{nom:"Village Kanniboul",boss:"Kanniboul Eb",niv:70,url:"https://www.dofuspourlesnoobs.com/village-kanniboul.html",succes:["Zombie","Premier","Spécial","Succès monstres"],zone:"Village Kanniboul"}},
+    {id:'kw31',texte:"Laboratoire de Brumen Tintorias",donjon:{nom:"Laboratoire de Brumen Tintorias",boss:"Brumen Tintorias",niv:80,url:"https://www.dofuspourlesnoobs.com/laboratoire-de-brumen-tintorias.html",succes:["Dernier","Misanthrope","Spécial","Succès monstres"],zone:"Laboratoire de Brumen Tintorias"}},
+    {id:'kw32',texte:"Cimetière des Mastodontes",donjon:{nom:"Cimetière des Mastodontes",boss:"Mantiscore",niv:80,url:"https://www.dofuspourlesnoobs.com/cimetiere-des-mastodontes.html",succes:["Mains Propres","Zombie","Spécial","Succès monstres"],zone:"Cimetière des Mastodontes"}},
+    {id:'kw33',texte:"Terrier du Wa Wabbit",note:"Percepteur lvl 80 dans le donjon\nSe servir des tamponneuses pour Blitz & Main Propre, voir vidéo de Huz",donjon:{nom:"Terrier du Wa Wabbit",boss:"Wa Wabbit",niv:80,url:"https://www.dofuspourlesnoobs.com/terrier-du-wa-wabbit.html",succes:["Mains Propres","Blitzkrieg","Spécial","Succès monstres"],zone:"Château du Wa Wabbit / Terrier"}},
+    {id:'kw34',texte:"Farm léger — Zone Pic de Cania",zone:"Zone Pic de Cania"},
+    {id:'kw35',texte:"Antre de la Reine Nyée",note:"Attention au combo Arapex + Néfileuse",donjon:{nom:"Antre de la Reine Nyée",boss:"Reine Nyée",niv:90,url:"https://www.dofuspourlesnoobs.com/antre-de-la-reine-nyee.html",succes:["Premier","Hardi","Spécial","Succès monstres"],zone:"Antre de la Reine Nyée"}},
+    {id:'kw36',texte:"Domaine Ancestral",note:"Percepteur lvl 80 dans le donjon",donjon:{nom:"Domaine Ancestral",boss:"Abraknyde Ancestral",niv:80,url:"https://www.dofuspourlesnoobs.com/domaine-ancestral.html",succes:["Nomade","Premier","Spécial","Succès monstres"],zone:"Domaine Ancestral"}},
+    {id:'kw37',texte:"Chapiteau des Magik Riktus",note:"Percepteur lvl 80 dans le donjon",donjon:{nom:"Chapiteau des Magik Riktus",boss:"Choudini",niv:90,url:"https://www.dofuspourlesnoobs.com/chapiteau-des-magik-riktus.html",succes:["Collant","Hardi","Spécial","Succès monstres"],zone:"Chapiteau des Magik Riktus"}},
+    {id:'kw38',texte:"Antre du Dragon Cochon",note:"Percepteur lvl 100 au boss\nAttention au poison du DC",donjon:{nom:"Antre du Dragon Cochon",boss:"Dragon Cochon",niv:100,url:"https://www.dofuspourlesnoobs.com/antre-du-dragon-cochon.html",succes:["Hardi","Versatile","Spécial","Succès monstres"],zone:"Antre du Dragon Cochon"},syncId:"drago_cochon"}
+  ];
+}
+
+function mkEtapes_Restuff(){
+  return [
+    {id:'r1',texte:"Bateau du Chouque",note:"Attention, One shot des alliés si <50% de vie",donjon:{nom:"Bateau du Chouque",boss:"Chouque",niv:90,url:"https://www.dofuspourlesnoobs.com/bateau-du-chouque.html",succes:["Dernier","Nomade","Spécial","Succès monstres"],zone:null}},
+    {id:'r2',texte:"Antre du Dragon Cochon — 2ème passage",note:"Percepteur lvl 100 au boss\nAttention au poison du DC",donjon:{nom:"Antre du Dragon Cochon",boss:"Dragon Cochon",niv:100,url:"https://www.dofuspourlesnoobs.com/antre-du-dragon-cochon.html",succes:["Hardi","Versatile","Spécial","Succès monstres"],zone:"Antre du Dragon Cochon"},syncId:"drago_cochon",syncSource:"kw38"},
+    {id:'r3',texte:"Caverne du Koulosse",note:"Attention, attire en ligne et transforme",donjon:{nom:"Caverne du Koulosse",boss:"Koulosse",niv:100,url:"https://www.dofuspourlesnoobs.com/caverne-du-koulosse.html",succes:["Zombie","Mains Propres","Spécial","Succès monstres"],zone:null}},
+    {id:'r4',texte:"Fabrique de Malléfisk",note:"Attendre que son bouclier s'enlève naturellement, et le taper une fois par tour",donjon:{nom:"Fabrique de Malléfisk",boss:"Malléfisk",niv:100,url:"https://www.dofuspourlesnoobs.com/fabrique-de-mallefisk.html",succes:["Circulez","Blitzkrieg","Spécial","Succès monstres"],zone:null}},
+    {id:'r5',texte:"Repaire de Kharnozor",note:"Ne pas être à 2 PO ou moins du boss",donjon:{nom:"Repaire de Kharnozor",boss:"Kharnozor",niv:100,url:"https://www.dofuspourlesnoobs.com/repaire-du-kharnozor.html",succes:["Dernier","Circulez","Spécial","Succès monstres"],zone:null}},
+    {id:'r6',texte:"Goulet du Rasboul",note:"Il lance son sort à 14 PA",donjon:{nom:"Goulet du Rasboul",boss:"Rasboul Majeur",niv:100,url:"https://www.dofuspourlesnoobs.com/goulet-du-rasboul.html",succes:["Premier","Temps qui court","Spécial","Succès monstres"],zone:null}},
+    {id:'r7',texte:"Tanière du Meulou",note:"Ne pas tuer l'invocation du Meulou, elle boost de 200% puissance et 2 PM si elle meurt",donjon:{nom:"Tanière du Meulou",boss:"Meulou",niv:100,url:"https://www.dofuspourlesnoobs.com/taniere-du-meulou.html",succes:["Premier","Hardi","Spécial","Succès monstres"],zone:null}},
+    {id:'r8',texte:"Théâtre de Dramak",note:"Chall au Dramak salle 4, taper le pantin jusqu'à 10% de sa vie et faire le sort (2 PO)",donjon:{nom:"Théâtre de Dramak",boss:"Dramak",niv:105,url:"https://www.dofuspourlesnoobs.com/theatre-de-dramak.html",succes:["Statue","Mains Propres","Spécial","Succès monstres"],zone:null}},
+    {id:'r9',texte:"Arbre de Moon",note:"Attention au Gloutovore et Trukillol qui enlèvent des PM",donjon:{nom:"Arbre de Moon",boss:"Lune",niv:110,url:"https://www.dofuspourlesnoobs.com/arbre-de-moon.html",succes:["Versatile","Statue","Spécial","Succès monstres"],zone:null}},
+    {id:'r10',texte:"Bibliothèque du Maître Corbac",donjon:{nom:"Bibliothèque du Maître Corbac",boss:"Maître Corbac",niv:110,url:"https://www.dofuspourlesnoobs.com/bibliotheque-du-maitre-corbac.html",succes:["Premier","Collant","Spécial","Succès monstres"],zone:null}},
+    {id:'r11',texte:"Garde-Manger du Rat Blanc",note:"Soin de l'Aloevée Rat, le focus en premier si pas de succès Rat Blanc [Premier]",donjon:{nom:"Garde-Manger du Rat Blanc",boss:"Rat Blanc",niv:110,url:"https://www.dofuspourlesnoobs.com/garde-manger-du-rat-blanc.html",succes:["Premier","Hardi","Spécial","Succès monstres"],zone:null}},
+    {id:'r12',texte:"Sousouricière du Rat Noir",note:"Attention le Rat Noir One shot au CaC",donjon:{nom:"Sousouricière du Rat Noir",boss:"Rat Noir",niv:110,url:"https://www.dofuspourlesnoobs.com/sousouriciere-du-rat-noir.html",succes:["Blitzkrieg","Hardi","Spécial","Succès monstres"],zone:null}},
+    {id:'r13',texte:"Bambusaie de Damadrya",donjon:{nom:"Bambusaie de Damadrya",boss:"Damadrya",niv:120,url:"https://www.dofuspourlesnoobs.com/bambusaie-de-damadrya.html",succes:["Premier","Hardi","Spécial","Succès monstres"],zone:null}},
+    {id:'r14',texte:"Centre du Labyrinthe du Minotoror",note:"Percepteur au boss 120\nRentrer dans le Minotot et potion de rappel",donjon:{nom:"Centre du Labyrinthe du Minotoror",boss:"Minotoror",niv:120,url:"https://www.dofuspourlesnoobs.com/labyrinthe-du-minotoror.html",succes:["Misanthrope","Mains Propres","Spécial","Succès monstres"],zone:null}},
+    {id:'r15',texte:"Miausolée du Pounicheur",donjon:{nom:"Miausolée du Pounicheur",boss:"Pounicheur",niv:120,url:"https://www.dofuspourlesnoobs.com/miausolee-du-pounicheur.html",succes:["Statue","Blitzkrieg","Spécial","Succès monstres"],zone:null}},
+    {id:'r16',texte:"Antre du Crocabulia",note:"Percepteur lvl 120 dans le donjon\nÊtre à plus de 8 PO d'une Coquille avant de la tuer",donjon:{nom:"Antre du Crocabulia",boss:"Crocabulia",niv:120,url:"https://www.dofuspourlesnoobs.com/antre-du-crocabulia.html",succes:["Statue","Versatile","Spécial","Succès monstres"],zone:null}},
+    {id:'r17',texte:"Antre du Blop Multicolore Royal",note:"Succès Prudent du Clos des Blops se met à jour ici aussi (les deux se fusionnent)",donjon:{nom:"Antre du Blop Multicolore Royal",boss:"Blop Multicolore Royal",niv:120,url:"https://www.dofuspourlesnoobs.com/antre-du-blop-multicolore-royal.html",succes:["Hardi","Duel","Spécial","Succès monstres","Prudent (Clos des Blops)"],zone:null},syncBlop:true},
+    {id:'r18',texte:"Serre du Royalmouth",note:"Attention au Do Pou du Légendaire",donjon:{nom:"Serre du Royalmouth",boss:"Royalmouth",niv:130,url:"https://www.dofuspourlesnoobs.com/serre-du-royalmouth.html",succes:["Mains Propres","Premier","Spécial","Succès monstres"],zone:null}},
+    {id:'r19',texte:"Volière de la Haute Truche",note:"Pas de coup de CaC sur le boss, sinon invu",donjon:{nom:"Volière de la Haute Truche",boss:"Haute Truche",niv:130,url:"https://www.dofuspourlesnoobs.com/voliere-de-la-haute-truche.html",succes:["Premier","Barbare","Spécial","Succès monstres"],zone:null}},
+    {id:'r20',texte:"Caverne d'El Piko",note:"Ne pas finir à côté d'un allié, et tuer les Lévito rapidement",donjon:{nom:"Caverne d'El Piko",boss:"El Piko",niv:130,url:"https://www.dofuspourlesnoobs.com/caverne-del-piko.html",succes:["Blitzkrieg","Duel","Spécial","Succès monstres"],zone:null}},
+    {id:'r21',texte:"Repaire de Skeunk",note:"Tuer la poupée affamée en invoquant, ATTENTION Diamantine invoque la poupée mortelle, tuer Rubise et Diamantine en priorité",donjon:{nom:"Repaire de Skeunk",boss:"Skeunk",niv:130,url:"https://www.dofuspourlesnoobs.com/repaire-de-skeunk.html",succes:["Statue","Blitzkrieg","Spécial","Succès monstres"],zone:null}},
+    {id:'r22',texte:"Tofulailler Royal",donjon:{nom:"Tofulailler Royal",boss:"Tofulailler Royal",niv:130,url:"https://www.dofuspourlesnoobs.com/tofulailler-royal.html",succes:["Dernier","Statue","Spécial","Succès monstres"],zone:null}},
+    {id:'r23',texte:"Vallée de la Dame des Eaux",note:"Sort Révérence pour Bombombre à Eau 100% ou attendre qu'un des monstres invoque une Bombombre à Eau",donjon:{nom:"Vallée de la Dame des Eaux",boss:"Dame des Eaux",niv:135,url:"https://www.dofuspourlesnoobs.com/vallee-de-la-dame-des-eaux.html",succes:["Nomade","Prudent","Spécial","Succès monstres"],zone:null}},
+    {id:'r24',texte:"Clairière du Chêne Mou",note:"Percepteur lvl 140 au boss",donjon:{nom:"Clairière du Chêne Mou",boss:"Chêne Mou",niv:140,url:"https://www.dofuspourlesnoobs.com/clairiere-du-chene-mou.html",succes:["Liberté","Premier","Spécial","Succès monstres"],zone:null}},
+    {id:'r25',texte:"Excavation du Mansot Royal",note:"Soin au cac pour délock, ne pas être au cac d'un allié lors du soin",donjon:{nom:"Excavation du Mansot Royal",boss:"Mansot Royal",niv:140,url:"https://www.dofuspourlesnoobs.com/excavation-du-mansot-royal.html",succes:["Dernier","Collant","Spécial","Succès monstres"],zone:null}},
+    {id:'r26',texte:"Mégalithe de Fraktale",note:"Dofuspourlesnoobs explique bien",donjon:{nom:"Mégalithe de Fraktale",boss:"Fraktale",niv:140,url:"https://www.dofuspourlesnoobs.com/megalithe-de-fraktale.html",succes:["Misanthrope","Blitzkrieg","Spécial","Succès monstres"],zone:null}},
+    {id:'r27',texte:"Ring du Capitaine Ekarlatte",donjon:{nom:"Ring du Capitaine Ekarlatte",boss:"Capitaine Ekarlatte",niv:140,url:"https://www.dofuspourlesnoobs.com/ring-du-capitaine-ekarlatte.html",succes:["Focus","Statue","Spécial","Succès monstres"],zone:null}},
+    {id:'r28',texte:"Atelier du Tanukouï San",note:"Dofuspourlesnoobs explique bien",donjon:{nom:"Atelier du Tanukouï San",boss:"Tanukouï San",niv:145,url:"https://www.dofuspourlesnoobs.com/atelier-du-tankoui-san.html",succes:["Statue","Versatile","Spécial","Succès monstres"],zone:null}},
+    {id:'r29',texte:"Laboratoire du Tynril",note:"Salle 4 un peu sportif à cause des Abra Sombre, focus dessus",donjon:{nom:"Laboratoire du Tynril",boss:"Tynril",niv:150,url:"https://www.dofuspourlesnoobs.com/laboratoire-du-tynril.html",succes:["Intouchable","Zombie","Spécial","Succès monstres"],zone:null}},
+    {id:'r30',texte:"Repaire de Sphincter Cell",donjon:{nom:"Repaire de Sphincter Cell",boss:"Sphincter Cell",niv:150,url:"https://www.dofuspourlesnoobs.com/repaire-de-sphincter-cell.html",succes:["Hardi","Dernier","Spécial","Succès monstres"],zone:null}},
+    {id:'r31',texte:"Dojo du Vent",note:"Shihan réduit les dommages à distance de 50%\nHanshi réduit les dommages de mêlée de 50%\nTuer les monstres avant de faire les boss",donjon:{nom:"Dojo du Vent",boss:"Haiyana",niv:150,url:"https://www.dofuspourlesnoobs.com/dojo-du-vent.html",succes:["Prudent","Dernier","Spécial","Succès monstres"],zone:null}},
+    {id:'r32',texte:"Épave du Grolandais Violent",note:"Attention aux pitrailles",donjon:{nom:"Épave du Grolandais Violent",boss:"Grolandais Violent",niv:150,url:"https://www.dofuspourlesnoobs.com/epave-du-grolandais-violent.html",succes:["Statue","Circulez","Spécial","Succès monstres"],zone:null}}
+  ];
+}
+
+const CHAPITRES = [
+  {id:'kwakwa',titre:'Opération Kwakwa',etapes:mkEtapes_Kwakwa()},
+  {id:'restuff90',titre:'Restuff 90 + Gelano FM et Pioute',etapes:mkEtapes_Restuff()},
+  {id:'stuff150',titre:'Team Stuff 150',etapes:[]}
+];
+
+// ============================================================
+// STATE
+// ============================================================
+let profile = null;
+let curTab = 'guide';
+let curChap = 0;
+const state = {
+  steps_pvm: {},     // stepId -> bool (Team PvM)
+  steps_sacri: {},   // stepId -> bool (Team Sacrieur)
+  succes_pvm: {},    // stepId_sucIdx -> bool (Team PvM)
+  succes_sacri: {},  // stepId_sucIdx -> bool (Team Sacrieur)
+  ressources: {},    // "zone||nom" -> number (partagé)
+};
+
+// Raccourcis selon profil actif
+function getSucces(){ return profile==='sacri' ? state.succes_sacri : state.succes_pvm; }
+function getSteps(){ return profile==='sacri' ? state.steps_sacri : state.steps_pvm; }
+
+// ============================================================
+// BADGE CLASSES
+// ============================================================
+function badgeClass(s){
+  const m = {
+    'zombie':'b-zombie','premier':'b-premier','spécial':'b-special',
+    'versatile':'b-versatile','succès monstres':'b-monstres','misanthrope':'b-misanthrope',
+    'collant':'b-collant','prudent':'b-prudent','blitzkrieg':'b-blitzkrieg',
+    'dernier':'b-dernier','nomade':'b-nomade','hardi':'b-hardi','statue':'b-statue',
+    'mains propres':'b-main','duel':'b-duel','focus':'b-focus','barbare':'b-barbare',
+    'circulez':'b-circulez','econome':'b-econome','liberté':'b-liberte',
+    'intouchable':'b-intouchable','temps qui court':'b-tps',
+    'prudent (clos des blops)':'b-prudent'
+  };
+  return m[s.toLowerCase()]||'b-default';
+}
+
+// ============================================================
+// PROFILE
+// ============================================================
+function selectProfile(p){
+  profile = p;
+  document.getElementById('profile-screen').style.display='none';
+  document.getElementById('app').classList.add('visible');
+  document.getElementById('profile-name').textContent = p==='pvm'?'Team PvM':'Team Sacrieur';
+  document.getElementById('header-sub').textContent = p==='pvm'?'Guide & Progression':'Craft & Ressources';
+  renderTabs();
+  renderContent();
+}
+
+function switchProfile(){
+  document.getElementById('app').classList.remove('visible');
+  document.getElementById('profile-screen').style.display='flex';
+  curTab='guide'; curChap=0;
+}
+
+// ============================================================
+// TABS
+// ============================================================
+function getTabs(){
+  const tabs = [
+    {id:'guide',label:'Guide'},
+    {id:'progression',label:'Progression'},
+    {id:'succes',label:'Succès restants'},
+    {id:'craft',label:'Atelier Craft'},
+    {id:'diverses',label:'Ressources Diverses'},
+    {id:'zone',label:'Zone'}
+  ];
+  if(profile==='sacri') tabs.push({id:'manquant',label:'Ressources manquantes'});
+  return tabs;
+}
+
+function renderTabs(){
+  const tabs = getTabs();
+  document.getElementById('app-tabs').innerHTML = tabs.map(t=>
+    `<div class="app-tab${t.id===curTab?' active':''}" onclick="setTab('${t.id}')">${t.label}</div>`
+  ).join('');
+}
+
+function setTab(t){
+  curTab=t;
+  renderTabs();
+  renderContent();
+}
+
+// ============================================================
+// RENDER CONTENT
+// ============================================================
+function renderContent(){
+  const el = document.getElementById('app-content');
+  if(curTab==='guide') el.innerHTML = profile==='sacri' ? renderGuideSacri() : renderGuide();
+  else if(curTab==='progression') el.innerHTML = renderProgression();
+  else if(curTab==='succes') el.innerHTML = renderSuccesRestants();
+  else if(curTab==='craft') el.innerHTML = renderCraft();
+  else if(curTab==='diverses') el.innerHTML = renderDiverses();
+  else if(curTab==='zone') el.innerHTML = renderZone();
+  else if(curTab==='manquant') el.innerHTML = renderManquant();
+}
+
+// ============================================================
+// GUIDE
+// ============================================================
+function renderGuide(){
+  const chap = CHAPITRES[curChap];
+  const total = chap.etapes.length;
+  const done = chap.etapes.filter(e=>getSteps()[e.id]).length;
+  const pct = total>0 ? Math.round(done/total*100) : 0;
+
+  const navTop = `<div class="chap-nav" style="margin-bottom:12px;margin-top:0;padding-top:0;border-top:none">
+    <div class="nav-btn${curChap===0?' hidden':''}" onclick="goChap(${curChap-1})">← Précédent</div>
+    <div class="chap-dots">${CHAPITRES.map((_,i)=>`<div class="chap-dot${i===curChap?' active':''}" onclick="goChap(${i})"></div>`).join('')}</div>
+    <div class="nav-btn${curChap===CHAPITRES.length-1?' hidden':''}" onclick="goChap(${curChap+1})">Suivant →</div>
+  </div>`;
+
+  let h = navTop + `<div class="chap-header">
+    <div class="chap-num">Chapitre ${curChap+1} / ${CHAPITRES.length}</div>
+    <div class="chap-title">${chap.titre}</div>
+    <div class="chap-prog-text">${done} / ${total} étapes complétées</div>
+    <div class="chap-bar-bg"><div class="chap-bar-fill" style="width:${pct}%"></div></div>
+  </div>`;
+
+  if(chap.etapes.length===0){
+    h += `<div class="empty-state">Ce chapitre n'a pas encore de contenu.</div>`;
+  } else {
+    chap.etapes.forEach((e,i)=>{
+      h += renderStep(e, i+1);
+    });
+  }
+
+  // Navigation
+  h += `<div class="chap-nav">
+    <div class="nav-btn${curChap===0?' hidden':''}" onclick="goChap(${curChap-1})">← Précédent</div>
+    <div class="chap-dots">${CHAPITRES.map((_,i)=>`<div class="chap-dot${i===curChap?' active':''}" onclick="goChap(${i})"></div>`).join('')}</div>
+    <div class="nav-btn${curChap===CHAPITRES.length-1?' hidden':''}" onclick="goChap(${curChap+1})">Suivant →</div>
+  </div>`;
+
+  return h;
+}
+
+function renderStep(e, num){
+  const done = getSteps()[e.id];
+  let h = `<div class="step${done?' step-done':''}" onclick="toggleStep('${e.id}')" id="step-${e.id}">
+    <div class="step-check${done?' checked':''}">
+      <svg class="chk" width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="white" stroke-width="2"/></svg>
+    </div>
+    <div class="step-num">${num}</div>
+    <div class="step-body" onclick="event.stopPropagation()">
+      <div class="step-text${done?' done':''}">
+        ${e.texte}
+        ${e.ip==='on'?'<span class="ip-tag ip-on">IP drop ON</span>':''}
+        ${e.ip==='off'?'<span class="ip-tag ip-off">IP drop OFF</span>':''}
+      </div>`;
+
+  if(e.donjon) h += renderDonjon(e);
+  if(e.note && !e.donjon) h += `<div class="note-block">${e.note}</div>`;
+  h += `</div></div>`;
+  return h;
+}
+
+function renderDonjon(e){
+  const d = e.donjon;
+  const resArr = d.zone ? (RESSOURCES_PAR_ZONE[d.zone]||[]) : [];
+  const totalSuc = d.succes.length;
+  const doneSuc = d.succes.filter((_,i)=>getSucces()[`${e.id}_${i}`]).length;
+  const doneRes = resArr.filter(r=>(state.ressources[`${d.zone}||${r.nom}`]||0)>=r.qte).length;
+  const complet = doneSuc===totalSuc && (resArr.length===0||doneRes===resArr.length);
+
+  // Note inline (bande ocre à côté du nom)
+  const noteInline = e.note ? `<span class="dj-note-inline" title="${e.note}">⚠ Info</span>` : '';
+
+  let h = `<div class="donjon-block">
+    <div class="donjon-header">
+      <div class="dj-info">
+        <div class="dj-name-row">
+          <span class="dj-name">${d.nom}</span>
+          ${e.note?`<span class="dj-note-pill">⚠ ${e.note}</span>`:''}
+        </div>
+        <div class="dj-boss">Boss : ${d.boss} — Niv. ${d.niv}</div>
+      </div>
+      <a class="dj-link" href="${d.url}" target="_blank">
+        <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 10L10 2M10 2H5M10 2V7" stroke="#e8a630" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Dofuspourlesnoobs
+      </a>
+    </div>
+    <div class="dj-body">
+      <div class="dj-succes-horiz">`;
+
+  d.succes.forEach((s,i)=>{
+    const on = getSucces()[`${e.id}_${i}`];
+    h += `<div class="suc-chip${on?' suc-done':''}" onclick="toggleSucces('${e.id}',${i},'${e.syncId||''}','${e.syncSource||''}',${!!e.syncBlop})">
+      <div class="scheck${on?' on':''}"><svg class="chk" width="8" height="6" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="white" stroke-width="2"/></svg></div>
+      <span class="badge ${badgeClass(s)}${on?' done':''}">${s}</span>
+    </div>`;
+  });
+
+  h += `</div>`;
+
+  // Ressources colonnes
+  const restuffArr = RESTUFF90_RES[d.nom] || [];
+  const hasRestuff = restuffArr.length > 0;
+  const sacriArr = SACRI_RES[d.nom] || [];
+  const hasSacri = sacriArr.length > 0;
+
+  if(resArr.length>0 || hasRestuff || hasSacri){
+    h += `<div class="res-deux-col">`;
+
+    // Colonne 1 : ressources Kwakwa existantes
+    if(resArr.length>0){
+      h += `<div class="res-col-kwakwa">`;
+      resArr.forEach(r=>{
+        const key=`${d.zone}||${r.nom}`;
+        const val=state.ressources[key]||0;
+        const pct=Math.min(100,Math.round(val/r.qte*100));
+        const full=val>=r.qte;
+        h += `<div class="res-inline-row" id="resrow-${key.replace(/[^a-zA-Z0-9]/g,'_')}">
+          <span class="res-inline-name${full?' full':''}">${r.nom}</span>
+          <div class="res-inline-ctrl">
+            <input class="res-input-sm" type="number" min="0" value="${val}"
+              oninput="updateRes('${key}',this.value,${r.qte})" onclick="event.stopPropagation()"/>
+            <span class="res-inline-sep">/ ${r.qte}</span>
+            <div class="res-bar-sm"><div class="res-bar-sm-fill${full?' full':''}" style="width:${pct}%"></div></div>
+            ${full?'<span class="res-ok-sm">✓</span>':''}
+          </div>
+        </div>`;
+      });
+      h += `</div>`;
+    }
+
+    // Colonne 2 : Stuff 150
+    if(hasRestuff){
+      h += `<div class="res-col-restuff">
+        <div class="restuff-label">Stuff 150</div>`;
+      restuffArr.forEach(r=>{
+        const key=`r90||${d.nom}||${r.nom}`;
+        const val=state.ressources[key]||0;
+        const pct=Math.min(100,Math.round(val/r.qte*100));
+        const full=val>=r.qte;
+        h += `<div class="res-inline-row" id="resrow-${key.replace(/[^a-zA-Z0-9]/g,'_')}">
+          <span class="res-inline-name${full?' full':''}">${r.nom}</span>
+          <div class="res-inline-ctrl">
+            <input class="res-input-sm" type="number" min="0" value="${val}"
+              oninput="updateRes('${key}',this.value,${r.qte})" onclick="event.stopPropagation()"/>
+            <span class="res-inline-sep">/ ${r.qte}</span>
+            <div class="res-bar-sm"><div class="res-bar-sm-fill${full?' full':''}" style="width:${pct}%"></div></div>
+            ${full?'<span class="res-ok-sm">✓</span>':''}
+          </div>
+        </div>`;
+      });
+      h += `</div>`;
+    }
+
+    // Colonne 3 : Stuff Team Sacrieur
+    if(hasSacri){
+      h += `<div class="res-col-restuff">
+        <div class="restuff-label" style="color:#c060c0">Stuff Team Sacrieur</div>`;
+      sacriArr.forEach(r=>{
+        const key=`sacri||${d.nom}||${r.nom}`;
+        const val=state.ressources[key]||0;
+        const pct=Math.min(100,Math.round(val/r.qte*100));
+        const full=val>=r.qte;
+        h += `<div class="res-inline-row" id="resrow-${key.replace(/[^a-zA-Z0-9]/g,'_')}">
+          <span class="res-inline-name${full?' full':''}">${r.nom}</span>
+          <div class="res-inline-ctrl">
+            <input class="res-input-sm" type="number" min="0" value="${val}"
+              oninput="updateRes('${key}',this.value,${r.qte})" onclick="event.stopPropagation()"/>
+            <span class="res-inline-sep">/ ${r.qte}</span>
+            <div class="res-bar-sm"><div class="res-bar-sm-fill${full?' full':''}" style="width:${pct}%"></div></div>
+            ${full?'<span class="res-ok-sm">✓</span>':''}
+          </div>
+        </div>`;
+      });
+      h += `</div>`;
+    }
+
+    h += `</div>`;
+  }
+
+  h += `</div></div>`;
+  return h;
+}
+
+// ============================================================
+// TOGGLE STEP
+// ============================================================
+function toggleStep(id){
+  getSteps()[id] = !getSteps()[id];
+  saveState();
+  renderContent();
+}
+
+// ============================================================
+// TOGGLE SUCCES
+// ============================================================
+function toggleSucces(stepId, idx, syncId, syncSource, syncBlop){
+  const key = `${stepId}_${idx}`;
+  getSucces()[key] = !getSucces()[key];
+
+  // Sync entre étapes liées (même syncId)
+  if(syncId){
+    CHAPITRES.forEach(chap=>{
+      chap.etapes.forEach(e=>{
+        if(e.syncId===syncId && e.id!==stepId){
+          const etapeSucIdx = e.donjon && e.donjon.succes ? e.donjon.succes.findIndex((_,i2)=>i2===idx) : idx;
+          if(etapeSucIdx>=0) getSucces()[`${e.id}_${etapeSucIdx}`] = getSucces()[key];
+        }
+      });
+    });
+  }
+
+  // Sync Blop Multicolore -> Clos des Blops (Prudent = dernier succès)
+  if(syncBlop){
+    CHAPITRES.forEach(chap=>{
+      chap.etapes.forEach(e=>{
+        if(e.syncId==='clos_blop'){
+          const prudentIdx = e.donjon.succes.findIndex(s=>s.toLowerCase()==='prudent');
+          if(prudentIdx>=0) getSucces()[`${e.id}_${prudentIdx}`] = getSucces()[key];
+        }
+      });
+    });
+  }
+
+  saveState();
+  renderContent();
+}
+
+// ============================================================
+// UPDATE RESSOURCE
+// ============================================================
+function updateRes(key, val, max){
+  state.ressources[key] = Math.min(parseInt(val)||0, max);
+  saveState();
+  const zone = key.split('||')[0];
+  const v = state.ressources[key];
+  const pct = Math.min(100, Math.round(v/max*100));
+  const full = v >= max;
+  const safeId = key.replace(/[^a-zA-Z0-9]/g,'_');
+
+  // Update toutes les lignes res-inline-row avec cet id
+  const row = document.getElementById('resrow-'+safeId);
+  if(row){
+    const name = row.querySelector('.res-inline-name');
+    if(name) name.classList.toggle('full', full);
+    const bar = row.querySelector('.res-bar-sm-fill');
+    if(bar){ bar.style.width=pct+'%'; bar.classList.toggle('full', full); }
+    const ok = row.querySelector('.res-ok-sm');
+    if(full && !ok){
+      const ctrl = row.querySelector('.res-inline-ctrl');
+      if(ctrl) ctrl.insertAdjacentHTML('beforeend','<span class="res-ok-sm">✓</span>');
+    } else if(!full && ok){ ok.remove(); }
+  }
+
+  // Update bouton Complet
+  CHAPITRES.forEach(chap=>{
+    chap.etapes.forEach(e=>{
+      if(e.donjon && e.donjon.zone===zone) updateCompletBtn(e);
+    });
+  });
+
+  if(profile==='sacri') renderContent();
+}
+
+function updateCompletBtn(e){
+  const d = e.donjon;
+  if(!d) return;
+  const resArr = d.zone?(RESSOURCES_PAR_ZONE[d.zone]||[]):[];
+  const totalSuc = d.succes.length;
+  const doneSuc = d.succes.filter((_,i)=>getSucces()[`${e.id}_${i}`]).length;
+  const doneRes = resArr.filter(r=>{
+    const key=`${d.zone}||${r.nom}`;
+    return (state.ressources[key]||0)>=r.qte;
+  }).length;
+  const complet = doneSuc===totalSuc&&(resArr.length===0||doneRes===resArr.length);
+  const btn = document.getElementById(`complet-${e.id}`);
+  if(btn){
+    btn.className='dj-complet-btn'+(complet?' complet':'');
+    btn.textContent = complet?'✓ Complet':'En cours...';
+  }
+}
+
+function goChap(n){curChap=n;renderContent()}
+
+// ============================================================
+// PROGRESSION
+// ============================================================
+// ============================================================
+// GUIDE SACRIEUR
+// ============================================================
+function mkEtapes_Sacri_Debut(){
+  return [
+    {id:'s1', texte:'Spawn, run Astrub, Boutique'},
+    {id:'s2', texte:'Drop des Panoplies Piou — pas d\'IP drop', ip:'off'},
+    {id:'s3', texte:'Équiper les panoplies Piou, puis opération rune familier', note:'Scélérat Strubien x5, Prespic x5, Sherpoa x5 — total 40 de chaque'},
+    {id:'s4', texte:'Craft 8 Dragolyre → brisage focus PA instant'},
+    {id:'s5', texte:'Run diligence Astrub → Cimetière des Héros → Rive Iridiscente pour Rose Obscure : massacrer le max en 8 minutes (minimum 8 roses)', note:'⏱ 8 MINUTES MAXIMUM'},
+    {id:'s6', texte:'Récupérer le zaap Bonta puis faire 4 Laine de Boufton Noir et 1 Corne de Boufton par 5 pétales de Rose Obscure'},
+    {id:'s7', texte:'Craft des Bottes de Poursuite → brisage focus PM'},
+    {id:'s8', texte:'Zaap Astrub → égout gauche d\'Astrub pour faire des Intestins Araknose (5-6 suffisent) — total 40 intestins'},
+    {id:'s9', texte:'Regroupement ressources avec la PvM, craft 10+ Mouthmou → brisage focus VITA'},
+    {id:'s10', texte:'Vérifier d\'avoir 12 Poil Daritz et 12 Étoffe du Sanglier', note:'Si pas dans l\'inventaire → aller les faire sur Prespic et Sanglier'},
+    {id:'s11', texte:'Rush le craft Guildalogemme'},
+    {id:'s12', texte:'Dopeul Sram — Récupérer des Pépites'},
+    {id:'s13', texte:'Drop Aile Maléfique x12 / Os Chafer Maléfique x12 / Antenne de Vilinsekt x12'}
+  ];
+}
+
+function getChapitreSacri(){
+  const kwEtapes = CHAPITRES[0].etapes;
+  // kw17bis = index 17 dans kwEtapes (Grotte Heske), on le met en pos 6
+  const etapesPvM = [
+    ...kwEtapes.slice(3, 8),   // pos 1-5 : kw4 à kw8
+    kwEtapes[17],              // pos 6 : kw17bis (Grotte Heske)
+    ...kwEtapes.slice(10, 17), // pos 7-13 : kw11 à kw17
+    ...kwEtapes.slice(18, 39), // pos 14+ : kw18 à kw38
+    ...CHAPITRES[1].etapes     // restuff90
+  ];
+  return [
+    {id:'sacri_debut', titre:'Opération Kwakwa — Team Sacrieur', etapes: mkEtapes_Sacri_Debut()},
+    {id:'sacri_pvm',   titre:'Suite PvM partagée', etapes: etapesPvM},
+    {id:'sacri_150',   titre:'Team Stuff 150', etapes:[]}
+  ];
+}
+
+let sacriChap = 0;
+
+function renderGuideSacri(){
+  const chapitres = getChapitreSacri();
+  const chap = chapitres[sacriChap];
+  const total = chap.etapes.length;
+  const done = chap.etapes.filter(e=>getSteps()[e.id]).length;
+  const pct = total>0?Math.round(done/total*100):0;
+
+  const navTop = `<div class="chap-nav" style="margin-bottom:12px;margin-top:0;padding-top:0;border-top:none">
+    <div class="nav-btn${sacriChap===0?' hidden':''}" onclick="goChapSacri(${sacriChap-1})">← Précédent</div>
+    <div class="chap-dots">${chapitres.map((_,i)=>`<div class="chap-dot${i===sacriChap?' active':''}" onclick="goChapSacri(${i})"></div>`).join('')}</div>
+    <div class="nav-btn${sacriChap===chapitres.length-1?' hidden':''}" onclick="goChapSacri(${sacriChap+1})">Suivant →</div>
+  </div>`;
+
+  let h = navTop + `<div class="chap-header">
+    <div class="chap-num">Chapitre ${sacriChap+1} / ${chapitres.length}</div>
+    <div class="chap-title">${chap.titre}</div>
+    <div class="chap-prog-text">${done} / ${total} étapes complétées</div>
+    <div class="chap-bar-bg"><div class="chap-bar-fill" style="width:${pct}%"></div></div>
+  </div>`;
+
+  if(chap.etapes.length===0){
+    h += `<div class="empty-state">Ce chapitre n'a pas encore de contenu.</div>`;
+  } else {
+    chap.etapes.forEach((e,i)=>{ h += renderStep(e, i+1); });
+  }
+
+  h += `<div class="chap-nav">
+    <div class="nav-btn${sacriChap===0?' hidden':''}" onclick="goChapSacri(${sacriChap-1})">← Précédent</div>
+    <div class="chap-dots">${chapitres.map((_,i)=>`<div class="chap-dot${i===sacriChap?' active':''}" onclick="goChapSacri(${i})"></div>`).join('')}</div>
+    <div class="nav-btn${sacriChap===chapitres.length-1?' hidden':''}" onclick="goChapSacri(${sacriChap+1})">Suivant →</div>
+  </div>`;
+
+  return h;
+}
+
+function goChapSacri(n){ sacriChap=n; renderContent(); }
+
+function renderProgression(){
+  const allEtapes = profile==='sacri'
+    ? getChapitreSacri().flatMap(c=>c.etapes)
+    : CHAPITRES.flatMap(c=>c.etapes);
+  const chapitresList = profile==='sacri' ? getChapitreSacri() : CHAPITRES;
+  const totalSteps = allEtapes.length;
+  const doneSteps = allEtapes.filter(e=>getSteps()[e.id]).length;
+  const pct = totalSteps>0?Math.round(doneSteps/totalSteps*100):0;
+
+  let allSuc=0, doneSuc=0;
+  allEtapes.forEach(e=>{
+    if(e.donjon){
+      e.donjon.succes.forEach((_,i)=>{allSuc++;if(getSucces()[`${e.id}_${i}`])doneSuc++;});
+    }
+  });
+  const sucPct = allSuc>0?Math.round(doneSuc/allSuc*100):0;
+
+  let h = `<div class="prog-card">
+    <div class="prog-label"><span>Progression globale</span><span class="prog-pct">${pct}%</span></div>
+    <div class="bar-bg"><div class="bar-fill${pct===100?' full':''}" style="width:${pct}%"></div></div>
+    <div class="prog-sub">${doneSteps} / ${totalSteps} étapes complétées</div>
+  </div>
+  <div class="prog-card">
+    <div class="prog-label"><span>Succès donjons</span><span class="prog-pct">${sucPct}%</span></div>
+    <div class="bar-bg"><div class="bar-fill${sucPct===100?' full':''}" style="width:${sucPct}%"></div></div>
+    <div class="prog-sub">${doneSuc} / ${allSuc} succès obtenus</div>
+  </div>
+  <div class="sec-label">Par chapitre</div>
+  <div class="prog-card">`;
+
+  chapitresList.forEach((chap,i)=>{
+    const tot = chap.etapes.length;
+    const don = chap.etapes.filter(e=>getSteps()[e.id]).length;
+    const p = tot>0?Math.round(don/tot*100):0;
+    h += `<div class="mini-row">
+      <span class="mini-label">Ch.${i+1} — ${chap.titre}</span>
+      <span class="mini-pct">${p}%</span>
+    </div>
+    <div class="mini-bar"><div class="mini-fill" style="width:${p}%"></div></div>
+    <div style="height:10px"></div>`;
+  });
+  h += `</div>`;
+  return h;
+}
+
+// ============================================================
+// SUCCES RESTANTS
+// ============================================================
+function renderSuccesRestants(){
+  let h = `<div style="font-size:13px;color:var(--text3);margin-bottom:14px">Succès non encore cochés — à compléter en jeu</div>`;
+  let any = false;
+  const chapitresList = profile==='sacri' ? getChapitreSacri() : CHAPITRES;
+
+  chapitresList.forEach((chap,ci)=>{
+    chap.etapes.forEach(e=>{
+      if(!e.donjon) return;
+      const remaining = e.donjon.succes.filter((_,i)=>!getSucces()[`${e.id}_${i}`]);
+      if(remaining.length===0) return;
+      any = true;
+      h += `<div class="todo-card">
+        <div class="todo-chap">Chapitre ${ci+1} — ${chap.titre}</div>
+        <div class="todo-dj">${e.donjon.nom}</div>
+        <div class="todo-badges">${remaining.map(s=>`<span class="badge ${badgeClass(s)}">${s}</span>`).join('')}</div>
+      </div>`;
+    });
+  });
+
+  if(!any) h += `<div class="empty-state">Tous les succès sont complétés ! 🎉</div>`;
+  return h;
+}
+
+// ============================================================
+// ATELIER CRAFT (PvM)
+// ============================================================
+const craftOpen = {};
+function renderCraft(){
+  let h = `<div style="font-size:13px;color:var(--text3);margin-bottom:16px">Ressources nécessaires pour le craft</div>`;
+
+  const CRAFT_SECTIONS = [
+    {
+      id:'kwakwa',
+      titre:'Opération Kwakwa',
+      data: RESSOURCES_PAR_ZONE,
+      keyFn: (zone, nom) => `${zone}||${nom}`
+    },
+    {
+      id:'stuff150',
+      titre:'Stuff 150',
+      data: RESTUFF90_RES,
+      keyFn: (zone, nom) => `r90||${zone}||${nom}`
+    },
+    {
+      id:'sacri',
+      titre:'Stuff Team Sacrieur',
+      data: SACRI_RES,
+      keyFn: (zone, nom) => `sacri||${zone}||${nom}`
+    }
+  ];
+
+  CRAFT_SECTIONS.forEach(section=>{
+    const open = craftOpen[section.id] ? 'open' : '';
+    h += `<div class="craft-chap">
+      <div class="craft-chap-header" onclick="toggleCraftZone('${section.id}')">
+        <div class="craft-chap-title">${section.titre}</div>
+        <span class="craft-chap-arrow ${open}">▼</span>
+      </div>
+      <div class="craft-chap-body ${open}">`;
+
+    const zones = Object.keys(section.data);
+    if(zones.length === 0){
+      h += `<div style="padding:12px 0;font-size:13px;color:var(--text3)">Aucune ressource pour l'instant.</div>`;
+    } else {
+      zones.forEach(zone=>{
+        const res = section.data[zone];
+        if(!res||res.length===0) return;
+        h += `<div class="craft-section"><div class="craft-zone-title">${zone}</div>`;
+        res.forEach(r=>{
+          const key = section.keyFn(zone, r.nom);
+          const val=state.ressources[key]||0;
+          const full=val>=r.qte;
+          h += `<div class="craft-row">
+            <div class="craft-name" style="${full?'color:var(--green2)':'color:#e05555'}">${r.nom}</div>
+            <div class="craft-input-wrap">
+              <input class="craft-input" type="number" min="0" value="${val}"
+                oninput="updateRes('${key}',this.value,${r.qte})"/>
+              <div class="craft-sep">/</div>
+              <div class="craft-total" style="${full?'color:var(--green2)':''}">${r.qte}</div>
+            </div>
+          </div>`;
+        });
+        h += `</div>`;
+      });
+    }
+
+    h += `</div></div>`;
+  });
+
+  return h;
+}
+
+// ============================================================
+// RESSOURCES DIVERSES
+// ============================================================
+const RESSOURCES_DIVERSES_SECTIONS = [
+  {
+    id:'restuff90',
+    titre:'Restuff 90 + Gelano FM et Pioute',
+    ressources:[
+      {nom:'Pépite', qte:460},
+      {nom:'Rose des Sables', qte:520},
+      {nom:'Kouartz', qte:9},
+      {nom:'Bakélélite', qte:27},
+      {nom:'Magnésite', qte:8},
+      {nom:'Substrat de Bosquet', qte:7},
+      {nom:'Substrat de Fascine', qte:34},
+      {nom:'Substrat de Futaie', qte:12},
+      {nom:'Galet Cramoisi', qte:24}
+    ]
+  },
+  {
+    id:'stuff150',
+    titre:'Stuff 150',
+    ressources: (RESTUFF90_RES["Ressources Diverses"]||[]).map(r=>({...r, key:`r90||Ressources Diverses||${r.nom}`}))
+  },
+  {
+    id:'sacri',
+    titre:'Stuff Team Sacrieur',
+    ressources: (SACRI_RES["Ressources Diverses"]||[]).map(r=>({...r, key:`sacri||Ressources Diverses||${r.nom}`}))
+  }
+];
+
+const diversesOpen = {};
+
+function renderDiverses(){
+  let h = `<div style="font-size:13px;color:var(--text3);margin-bottom:16px">Ressources diverses</div>`;
+
+  RESSOURCES_DIVERSES_SECTIONS.forEach(section=>{
+    const open = diversesOpen[section.id] ? 'open' : '';
+
+    h += `<div class="craft-chap">
+      <div class="craft-chap-header" onclick="toggleDiverses('${section.id}')">
+        <div class="craft-chap-title">${section.titre}</div>
+        <span class="craft-chap-arrow ${open}">▼</span>
+      </div>
+      <div class="craft-chap-body ${open}">`;
+
+    if(section.ressources.length===0){
+      h += `<div style="padding:12px 0;font-size:13px;color:var(--text3)">Aucune ressource pour l'instant.</div>`;
+    } else {
+      section.ressources.forEach(r=>{
+        const key = r.key || `div||${section.id}||${r.nom}`;
+        const val=state.ressources[key]||0;
+        const full=val>=r.qte;
+        h += `<div class="craft-row">
+          <div class="craft-name" style="${full?'color:var(--green2)':'color:#e05555'}">${r.nom}</div>
+          <div class="craft-input-wrap">
+            <input class="craft-input" type="number" min="0" value="${val}"
+              oninput="updateRes('${key}',this.value,${r.qte})"/>
+            <div class="craft-sep">/</div>
+            <div class="craft-total" style="${full?'color:var(--green2)':''}">${r.qte}</div>
+          </div>
+        </div>`;
+      });
+    }
+
+    h += `</div></div>`;
+  });
+
+  return h;
+}
+
+function toggleDiverses(id){
+  diversesOpen[id] = !diversesOpen[id];
+  renderContent();
+}
+
+function updateResDiv(key, val, max){
+  state.ressources[key] = Math.min(parseInt(val)||0, max);
+  saveState();
+  renderContent();
+}
+
+// ============================================================
+// ONGLET ZONE
+// ============================================================
+const zoneOpen = {};
+
+function renderZone(){
+  let h = `<div style="font-size:13px;color:var(--text3);margin-bottom:16px">Ressources de zones — par chapitre</div>`;
+
+  const ZONE_SECTIONS = [
+    {
+      id:'kwakwa',
+      titre:'Opération Kwakwa',
+      zones: Object.keys(RESSOURCES_PAR_ZONE).filter(z=>z.startsWith('Zone')||z==='Grotte Heske'||z==='Nid du Kwakwa'||z==='Donjon Bworks'||z==='Epreuve de Draegnerys'),
+      data: RESSOURCES_PAR_ZONE,
+      keyFn: (zone, nom) => `${zone}||${nom}`
+    },
+    {
+      id:'restuff90',
+      titre:'Restuff 90 + Gelano FM et Pioute',
+      zones: RESTUFF90_ZONES,
+      data: RESTUFF90_RES,
+      keyFn: (zone, nom) => `r90||${zone}||${nom}`
+    },
+    {
+      id:'sacri',
+      titre:'Stuff Team Sacrieur',
+      zones: SACRI_ZONES,
+      data: SACRI_RES,
+      keyFn: (zone, nom) => `sacri||${zone}||${nom}`
+    }
+  ];
+
+  ZONE_SECTIONS.forEach(section=>{
+    const open = zoneOpen[section.id]?'open':'';
+    h += `<div class="craft-chap">
+      <div class="craft-chap-header" onclick="toggleZone('${section.id}')">
+        <div class="craft-chap-title">${section.titre}</div>
+        <span class="craft-chap-arrow ${open}">▼</span>
+      </div>
+      <div class="craft-chap-body ${open}">`;
+
+    section.zones.forEach(zone=>{
+      const res = section.data[zone]||[];
+      if(!res||res.length===0) return;
+      h += `<div class="craft-section"><div class="craft-zone-title">${zone}</div>`;
+      res.forEach(r=>{
+        const key = section.keyFn(zone, r.nom);
+        const val=state.ressources[key]||0;
+        const full=val>=r.qte;
+        h += `<div class="craft-row">
+          <div class="craft-name" style="${full?'color:var(--green2)':'color:#e05555'}">${r.nom}</div>
+          <div class="craft-input-wrap">
+            <input class="craft-input" type="number" min="0" value="${val}"
+              oninput="updateRes('${key}',this.value,${r.qte})"/>
+            <div class="craft-sep">/</div>
+            <div class="craft-total" style="${full?'color:var(--green2)':''}">${r.qte}</div>
+          </div>
+        </div>`;
+      });
+      h += `</div>`;
+    });
+
+    h += `</div></div>`;
+  });
+
+  return h;
+}
+
+function toggleZone(id){
+  zoneOpen[id] = !zoneOpen[id];
+  renderContent();
+}
+
+function toggleCraftZone(id){
+  craftOpen[id] = !craftOpen[id];
+  renderContent();
+}
+
+// ============================================================
+// RESSOURCES MANQUANTES (Sacrieur)
+// ============================================================
+const manqOpen = {};
+
+function renderManquant(){
+  let h = `<div style="font-size:13px;color:var(--text3);margin-bottom:16px">Ressources manquantes — mis à jour en temps réel</div>`;
+
+  const MANQ_SECTIONS = [
+    {
+      id:'kwakwa',
+      titre:'Opération Kwakwa',
+      getRes: ()=>{
+        const zones = new Set();
+        CHAPITRES.forEach(chap=>chap.etapes.forEach(e=>{
+          if(e.donjon&&e.donjon.zone) zones.add(e.donjon.zone);
+          if(e.zone) zones.add(e.zone);
+        }));
+        ZONES_SACRI_ONLY.forEach(z=>zones.add(z));
+        const result = [];
+        zones.forEach(zone=>{
+          const res = RESSOURCES_PAR_ZONE[zone];
+          if(!res||!res.length) return;
+          const manquantes = res.filter(r=>(state.ressources[`${zone}||${r.nom}`]||0)<r.qte);
+          if(manquantes.length) result.push({zone, manquantes, keyFn: r=>`${zone}||${r.nom}`});
+        });
+        return result;
+      }
+    },
+    {
+      id:'stuff150',
+      titre:'Stuff 150',
+      getRes: ()=>{
+        const result = [];
+        Object.keys(RESTUFF90_RES).forEach(zone=>{
+          const res = RESTUFF90_RES[zone];
+          if(!res||!res.length) return;
+          const manquantes = res.filter(r=>(state.ressources[`r90||${zone}||${r.nom}`]||0)<r.qte);
+          if(manquantes.length) result.push({zone, manquantes, keyFn: r=>`r90||${zone}||${r.nom}`});
+        });
+        return result;
+      }
+    },
+    {
+      id:'sacri',
+      titre:'Stuff Team Sacrieur',
+      getRes: ()=>{
+        const result = [];
+        Object.keys(SACRI_RES).forEach(zone=>{
+          const res = SACRI_RES[zone];
+          if(!res||!res.length) return;
+          const manquantes = res.filter(r=>(state.ressources[`sacri||${zone}||${r.nom}`]||0)<r.qte);
+          if(manquantes.length) result.push({zone, manquantes, keyFn: r=>`sacri||${zone}||${r.nom}`});
+        });
+        return result;
+      }
+    }
+  ];
+
+  MANQ_SECTIONS.forEach(section=>{
+    const open = manqOpen[section.id]?'open':'';
+    const items = section.getRes();
+    const totalManq = items.reduce((a,b)=>a+b.manquantes.length,0);
+
+    h += `<div class="craft-chap">
+      <div class="craft-chap-header" onclick="toggleManq('${section.id}')">
+        <div class="craft-chap-title">${section.titre}${totalManq>0?` <span style="font-size:11px;font-weight:400;color:var(--red)">${totalManq} manquante${totalManq>1?'s':''}</span>`:' <span style="font-size:11px;font-weight:400;color:var(--green2)">✓ Complet</span>'}</div>
+        <span class="craft-chap-arrow ${open}">▼</span>
+      </div>
+      <div class="craft-chap-body ${open}">`;
+
+    if(items.length===0){
+      h += `<div style="padding:12px 0;font-size:13px;color:var(--green2)">Toutes les ressources sont complètes ! 🎉</div>`;
+    } else {
+      items.forEach(({zone, manquantes, keyFn})=>{
+        h += `<div class="manq-zone"><div class="manq-zone-title">${zone}</div>`;
+        manquantes.forEach(r=>{
+          const val = state.ressources[keyFn(r)]||0;
+          h += `<div class="manq-row">
+            <div class="manq-name">${r.nom}</div>
+            <div class="manq-missing">Il manque ${r.qte-val}</div>
+          </div>`;
+        });
+        h += `</div>`;
+      });
+    }
+
+    h += `</div></div>`;
+  });
+
+  return h;
+}
+
+function toggleManq(id){
+  manqOpen[id] = !manqOpen[id];
+  renderContent();
+}
+
+// ============================================================
+// JSONBIN — SYNC PARTAGÉE
+// ============================================================
+const BIN_ID = '69b9b9f7aa77b81da9f344b0';
+const API_KEY = '$2a$10$Z0xJlL0RFOE9gVB.rz6RrOqKKycsx09pqH6RtoL1WFeDkJ25vMWNe';
+const BIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+const SAVE_KEY = 'guidecoteam_v1';
+
+let syncTimeout = null;
+let lastSyncTime = 0;
+let isSyncing = false;
+
+function showSyncStatus(status){
+  let el = document.getElementById('sync-status');
+  if(!el) return;
+  const colors = {ok:'#3db868', saving:'#e8a630', error:'#c04848'};
+  const labels = {ok:'✓ Sync', saving:'↑ Sync...', error:'⚠ Offline'};
+  el.style.color = colors[status]||colors.ok;
+  el.textContent = labels[status]||labels.ok;
+}
+
+async function saveState(){
+  try {
+    localStorage.setItem(SAVE_KEY, JSON.stringify({
+      steps_pvm: state.steps_pvm,
+      steps_sacri: state.steps_sacri,
+      succes_pvm: state.succes_pvm,
+      succes_sacri: state.succes_sacri,
+      ressources: state.ressources
+    }));
+  } catch(e){}
+  clearTimeout(syncTimeout);
+  syncTimeout = setTimeout(pushToJsonBin, 1000);
+}
+
+async function pushToJsonBin(){
+  if(isSyncing) return;
+  isSyncing = true;
+  showSyncStatus('saving');
+  try {
+    await fetch(BIN_URL, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Master-Key': API_KEY,
+        'X-Bin-Versioning': 'false'
+      },
+      body: JSON.stringify({
+        steps_pvm: state.steps_pvm,
+        steps_sacri: state.steps_sacri,
+        succes_pvm: state.succes_pvm,
+        succes_sacri: state.succes_sacri,
+        ressources: state.ressources
+      })
+    });
+    lastSyncTime = Date.now();
+    showSyncStatus('ok');
+  } catch(e){
+    showSyncStatus('error');
+  }
+  isSyncing = false;
+}
+
+async function loadState(){
+  try {
+    const saved = localStorage.getItem(SAVE_KEY);
+    if(saved){
+      const data = JSON.parse(saved);
+      if(data.steps_pvm) Object.assign(state.steps_pvm, data.steps_pvm);
+      if(data.steps_sacri) Object.assign(state.steps_sacri, data.steps_sacri);
+      // Rétrocompat ancien format
+      if(data.steps && !data.steps_pvm) Object.assign(state.steps_pvm, data.steps);
+      if(data.succes_pvm) Object.assign(state.succes_pvm, data.succes_pvm);
+      if(data.succes_sacri) Object.assign(state.succes_sacri, data.succes_sacri);
+      if(data.ressources) Object.assign(state.ressources, data.ressources);
+    }
+  } catch(e){}
+
+  try {
+    showSyncStatus('saving');
+    const res = await fetch(BIN_URL + '/latest', {
+      headers: {'X-Master-Key': API_KEY}
+    });
+    const json = await res.json();
+    const data = json.record || {};
+    if(data.steps_pvm) Object.assign(state.steps_pvm, data.steps_pvm);
+    if(data.steps_sacri) Object.assign(state.steps_sacri, data.steps_sacri);
+    if(data.steps && !data.steps_pvm) Object.assign(state.steps_pvm, data.steps);
+    if(data.succes_pvm) Object.assign(state.succes_pvm, data.succes_pvm);
+    if(data.succes_sacri) Object.assign(state.succes_sacri, data.succes_sacri);
+    if(data.ressources) Object.assign(state.ressources, data.ressources);
+    localStorage.setItem(SAVE_KEY, JSON.stringify({
+      steps_pvm: state.steps_pvm, steps_sacri: state.steps_sacri,
+      succes_pvm: state.succes_pvm, succes_sacri: state.succes_sacri,
+      ressources: state.ressources
+    }));
+    showSyncStatus('ok');
+    if(profile) renderContent();
+  } catch(e){
+    showSyncStatus('error');
+  }
+}
+
+// Sync automatique toutes les 30 secondes
+setInterval(async ()=>{
+  if(document.hidden) return;
+  try {
+    const res = await fetch(BIN_URL + '/latest', {
+      headers: {'X-Master-Key': API_KEY}
+    });
+    const json = await res.json();
+    const data = json.record || {};
+    let changed = false;
+    ['steps','succes_pvm','succes_sacri','ressources'].forEach(k=>{
+      if(data[k]) {
+        const before = JSON.stringify(state[k]);
+        Object.assign(state[k], data[k]);
+        if(JSON.stringify(state[k]) !== before) changed = true;
+      }
+    });
+    if(changed && profile) renderContent();
+    showSyncStatus('ok');
+  } catch(e){}
+}, 30000);
+
+// ============================================================
+// INIT
+// ============================================================
+window.onload = function(){
+  loadState();
+};
+</script>
+</body>
+</html>
+<!-- placeholder -->
